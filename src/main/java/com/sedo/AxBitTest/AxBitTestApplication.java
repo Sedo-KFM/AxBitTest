@@ -1,0 +1,13 @@
+package com.sedo.AxBitTest;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AxBitTestApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AxBitTestApplication.class, args);
+	}
+
+}
