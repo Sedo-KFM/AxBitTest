@@ -13,7 +13,17 @@ public class Author {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String name, surname, patronymic;
-	private Date birthday;
+	private Date birthdate;
+
+	public Author() {
+	}
+
+	public Author(String name, String surname, String patronymic, Date birthdate) {
+		this.name = name;
+		this.surname = surname;
+		this.patronymic = patronymic;
+		this.birthdate = birthdate;
+	}
 
 	public Long getId() {
 		return id;
@@ -47,11 +57,11 @@ public class Author {
 		this.patronymic = patronymic;
 	}
 
-	public Date getBirthday() {
-		return birthday;
+	public Date getBirthdate() {
+		return birthdate;
 	}
 
-	public void setBirthday(Date birthday) {
-		this.birthday = birthday;
+	public void setBirthdate(Date birthdate) {
+		this.birthdate = birthdate;
 	}
 }

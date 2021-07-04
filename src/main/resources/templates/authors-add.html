@@ -8,18 +8,20 @@
     <title>Home</title>
 </head>
 <body>
-<div class="main-container">
-    <h1>Спискок авторов:</h1>
-    <ul class="list-group">
-        <li th:each="author : ${authors}" class="list-group-item">
-            <h3 th:text="${author.surname}"/>
-            <span th:text="${author.name}"/>
-            <span th:text="${author.patronymic}"/>
-            <span th:text="${author.birthday}"/>
-            <a th:href="'/author/' + ${author.id}">Книги</a>
-        </li>
-    </ul>
-</div>
+    <div class="main-container">
+        <h1 class="main-label">Введите данные автора:</h1>
+        <form action="/authors/add" method="post">
+            <span class="on-input-label">Фамилия</span>
+            <input type="text" class="form-control mb-3" name="surname">
+            <span class="on-input-label">Имя</span>
+            <input type="text" class="form-control mb-3" name="name">
+            <span class="on-input-label">Отчество</span>
+            <input type="text" class="form-control mb-3" name="patronymic">
+            <span class="on-input-label">Дата рожденияя</span>
+            <input type="date" class="form-control mb-3" name="birthdate">
+            <button type="submit" class="btn btn-primary form-submit-button">Добавить</button>
+        </form>
+    </div>
 </body>
 <style>
     body {
@@ -28,7 +30,19 @@
     }
 
     .main-container {
-        padding: 10vh 10vw 0 10vw;
+        padding: 10vh 50vw 0 10vw;
+    }
+
+    .main-label {
+        margin-bottom: 30px;
+    }
+
+    .on-input-label {
+        font-weight: 600;
+    }
+
+    .form-submit-button {
+        margin-top: 10px;
     }
 </style>
 </html>
