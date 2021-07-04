@@ -11,20 +11,20 @@ public class Book {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	private String isbn;
+	private Long isbn;
 
 	public Book() {
 	}
 
-	public Book(String isbn) {
+	public Book(Long isbn) {
 		this.isbn = isbn;
 	}
 
-	public String getIsbn() {
+	public Long getIsbn() {
 		return isbn;
 	}
 
-	public void setIsbn(String isbn) {
+	public void setIsbn(Long isbn) {
 		this.isbn = isbn;
 	}
 }

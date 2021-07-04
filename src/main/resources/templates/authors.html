@@ -10,18 +10,30 @@
 <body>
 <div class="main-container">
     <h1>Спискок авторов:</h1>
-    <ul class="list-group">
-        <li th:each="author : ${authors}" class="list-group-item">
-            <h3 th:text="${author.surname}"/>
-            <span th:text="${author.name}"/>
-            <span th:text="${author.patronymic}"/>
-            <span th:text="${author.birthdate}"/>
-            <a th:href="'/author/' + ${author.id}">Книги</a>
-        </li>
-        <li class="list-group-item">
-            <a class="btn btn-primary" href="/authors/add" role="button">Добавить автора</a>
-        </li>
-    </ul>
+    </br>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Surname</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Patronymic</th>
+                    <th scope="col">Birthdate</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="author : ${authors}">
+                    <th th:text="${author.surname}" scope="row"/>
+                    <td th:text="${author.name}" />
+                    <td th:text="${author.patronymic}"/>
+                    <td th:text="${author.birthdate}" />
+                    <td><a class="btn btn-primary btn-sm" href="#" role="button">Книги</a></td>
+                </tr>
+            </tbody>
+        </table>
+        <a class="btn btn-primary" href="/authors/add" role="button">Добавить автора</a>
+    </div>
 </div>
 </body>
 <style>
@@ -32,6 +44,12 @@
 
     .main-container {
         padding: 10vh 10vw 0 10vw;
+    }
+
+    .table-container {
+        border-radius:0.2rem;
+        background-color:#fff;
+        padding: 16px 10px;
     }
 </style>
 </html>

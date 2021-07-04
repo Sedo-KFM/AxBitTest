@@ -1,10 +1,8 @@
 package com.sedo.AxBitTest.models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.sql.Date;
+import java.util.Set;
 
 @Entity
 public class Author {
@@ -14,11 +12,24 @@ public class Author {
 	private Long id;
 	private String name, surname, patronymic;
 	private Date birthdate;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_roles",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
+	private Set<Book> roles;
 
 	public Author() {
 	}
 
 	public Author(String name, String surname, String patronymic, Date birthdate) {
+		this.name = name;
+		this.surname = surname;
+		this.patronymic = patronymic;
+		this.birthdate = birthdate;
+	}
+
+	public void edit(String name, String surname, String patronymic, Date birthdate) {
 		this.name = name;
 		this.surname = surname;
 		this.patronymic = patronymic;
@@ -63,5 +74,13 @@ public class Author {
 
 	public void setBirthdate(Date birthdate) {
 		this.birthdate = birthdate;
+	}
+
+	public Set<Book> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(Set<Book> roles) {
+		this.roles = roles;
 	}
 }
