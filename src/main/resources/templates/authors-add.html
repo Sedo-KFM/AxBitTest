@@ -9,11 +9,16 @@
 </head>
 <body>
 <div class="main-container">
-    <div class="d-grid gap-2">
-        <a class="btn btn-primary" href="/authors" role="button">Авторы</a>
-        <a class="btn btn-primary" href="/books" role="button">Книги</a>
-        <a class="btn btn-primary" href="/genres" role="button">Жанры</a>
-    </div>
+    <h1>Спискок авторов:</h1>
+    <ul class="list-group">
+        <li th:each="author : ${authors}" class="list-group-item">
+            <h3 th:text="${author.surname}"/>
+            <span th:text="${author.name}"/>
+            <span th:text="${author.patronymic}"/>
+            <span th:text="${author.birthday}"/>
+            <a th:href="'/author/' + ${author.id}">Книги</a>
+        </li>
+    </ul>
 </div>
 </body>
 <style>
@@ -23,10 +28,7 @@
     }
 
     .main-container {
-        padding: 30vh 20vw 0 20vw;
-        font-family: sans-serif;
-        font-size: large;
+        padding: 10vh 10vw 0 10vw;
     }
-
 </style>
 </html>

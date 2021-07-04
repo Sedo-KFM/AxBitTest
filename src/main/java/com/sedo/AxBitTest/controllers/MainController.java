@@ -11,14 +11,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class MainController {
 
-	@Autowired
-	private AuthorRepository authorRepository;
-
 	@GetMapping("/")
-	public String greeting(Model model) {
-		Iterable<Author> authors = authorRepository.findAll();
-		model.addAttribute("authors", authors);
+	public String home(Model model) {
 		return "home";
 	}
-
 }
