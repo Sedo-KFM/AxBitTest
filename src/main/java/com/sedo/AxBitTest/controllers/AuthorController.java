@@ -72,6 +72,18 @@ public class AuthorController {
 			return "redirect:/authors";
 		}
 		return "redirect:/authors";
+	}
 
+	@PostMapping("/authors/{id}/delete")
+	public String authorRemovePost(@PathVariable(value = "id") long id, Model model) {
+		if (!authorRepository.existsById(id)) {
+			return "redirect:/authors";
+		}
+		Optional<Author> author = authorRepository.findById(id);
+		if (author.isPresent()) {
+			authorRepository.delete(author.get());
+			return "redirect:/authors";
+		}
+		return "redirect:/authors";
 	}
 }

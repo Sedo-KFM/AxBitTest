@@ -13,11 +13,11 @@ public class Author {
 	private String name, surname, patronymic;
 	private Date birthdate;
 	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_roles",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn(name = "role_id")
+	@JoinTable(name = "book_author",
+			joinColumns = @JoinColumn(name = "author_id"),
+			inverseJoinColumns = @JoinColumn(name = "book_id")
 	)
-	private Set<Book> roles;
+	private Set<Book> books;
 
 	public Author() {
 	}
@@ -76,11 +76,11 @@ public class Author {
 		this.birthdate = birthdate;
 	}
 
-	public Set<Book> getRoles() {
-		return roles;
+	public Set<Book> getBooks() {
+		return books;
 	}
 
-	public void setRoles(Set<Book> roles) {
-		this.roles = roles;
+	public void setBooks(Set<Book> books) {
+		this.books = books;
 	}
 }

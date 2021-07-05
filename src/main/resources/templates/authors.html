@@ -15,11 +15,11 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">Surname</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Patronymic</th>
-                    <th scope="col">Birthdate</th>
-                    <th scope="col"></th>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Отчество</th>
+                    <th scope="col">Дата рождения</th>
+                    <th scope="col">Функции</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,7 +28,15 @@
                     <td th:text="${author.name}" />
                     <td th:text="${author.patronymic}"/>
                     <td th:text="${author.birthdate}" />
-                    <td><a class="btn btn-primary btn-sm" href="#" role="button">Книги</a></td>
+                    <td>
+                        <form th:action="'/authors/' + ${author.id} + '/delete'" method="post">
+                            <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                <a th:href="'/authors/' + ${author.id}" type="button" class="btn btn-outline-primary">Информация</a>
+                                <a th:href="'/authors/' + ${author.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
+                                <button type="submit" class="rounded-end btn btn-outline-primary">Удалить</button>
+                            </div>
+                        </form>
+                    </td>
                 </tr>
             </tbody>
         </table>
