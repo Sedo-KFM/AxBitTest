@@ -26,6 +26,19 @@ public class AuthorController {
 		return "authors";
 	}
 
+	@GetMapping("/authors/{id}")
+	public String author(@PathVariable(value = "id") long id, Model model) {
+		if (!authorRepository.existsById(id)) {
+			return "authors";
+		}
+		Optional<Author> author = authorRepository.findById(id);
+		if (author.isPresent()) {
+			model.addAttribute("author", author.get());
+			return "author";
+		}
+		return "authors";
+	}
+
 	@GetMapping("/authors/add")
 	public String authorsAdd(Model model) {
 		return "authors-add";

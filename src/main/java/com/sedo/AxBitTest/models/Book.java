@@ -2,6 +2,7 @@ package com.sedo.AxBitTest.models;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Book {
@@ -10,8 +11,12 @@ public class Book {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private Long isbn;
-//	@ManyToMany(mappedBy = "book")
-//	private List<Author> authors;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "book_author",
+			joinColumns = @JoinColumn(name = "book_id"),
+			inverseJoinColumns = @JoinColumn(name = "author_id")
+	)
+	private Set<Author> authors;
 
 	public Book() {
 	}

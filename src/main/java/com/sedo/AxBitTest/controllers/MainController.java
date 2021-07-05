@@ -31,9 +31,6 @@ public class MainController {
 		Author firstAuthor = authors.iterator().next();
 		Iterable<Book> books = bookRepository.findAll();
 		Book firstBook = books.iterator().next();
-		firstAuthor.getBooks().add(firstBook);
-		authorRepository.save(firstAuthor);
-		model.addAttribute("answer", 0);
 		return "authors";
 	}
 }
