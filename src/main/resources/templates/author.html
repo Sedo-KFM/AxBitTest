@@ -27,11 +27,13 @@
             </div>
             <div class="col">
                 <h5>Список книг</h5>
-                <div class="white-space-container">
-                    <div th:each="book : ${author.books}" class="row">
-                        <span th:text="${book.isbn}"/>
-                    </div>
-                </div>
+                <form class="white-space-container">
+                    <ul class="list-group">
+                        <li th:each="book : ${author.books}" class="list-group-item">
+                            <span th:text="${book.isbn}"/>
+                        </li>
+                    </ul>
+                </form>
             </div>
         </div>
     </div>

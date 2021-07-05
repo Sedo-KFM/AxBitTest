@@ -10,17 +10,35 @@
 <body>
 <div class="main-container">
     <h1 class="main-label">Введите данные автора:</h1>
-    <form method="post">
-        <span class="on-input-label">Фамилия</span>
-        <input type="text" class="form-control mb-3" name="surname" th:value="${author.surname}">
-        <span class="on-input-label">Имя</span>
-        <input type="text" class="form-control mb-3" name="name" th:value="${author.name}">
-        <span class="on-input-label">Отчество</span>
-        <input type="text" class="form-control mb-3" name="patronymic" th:value="${author.patronymic}">
-        <span class="on-input-label">Дата рожденияя</span>
-        <input type="date" class="form-control mb-3" name="birthdate" th:value="${author.birthdate}">
-        <button type="submit" class="btn btn-primary form-submit-button">Сохранить</button>
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form method="post">
+                    <span class="on-input-label">Фамилия</span>
+                    <input type="text" class="form-control mb-3" name="surname" th:value="${author.surname}">
+                    <span class="on-input-label">Имя</span>
+                    <input type="text" class="form-control mb-3" name="name" th:value="${author.name}">
+                    <span class="on-input-label">Отчество</span>
+                    <input type="text" class="form-control mb-3" name="patronymic" th:value="${author.patronymic}">
+                    <span class="on-input-label">Дата рождения</span>
+                    <input type="date" class="form-control mb-3" name="birthdate" th:value="${author.birthdate}">
+                    <button type="submit" class="btn btn-primary form-submit-button">Сохранить</button>
+                </form>
+            </div>
+            <div class="col">
+                <form th:action="'/authors/' + ${author.id} + '/edit/book'" method="post">
+                    <span class="on-input-label">Введите код книги, которую хотите добавить или удалить</span>
+                    <div class="col-auto">
+                        <input type="text" class="form-control mb-3" name="isbn">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary mb-3">Подтвердить</button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 <style>
@@ -30,7 +48,7 @@
     }
 
     .main-container {
-        padding: 10vh 50vw 0 10vw;
+        padding: 10vh 10vw 0 10vw;
     }
 
     .main-label {

@@ -1,7 +1,6 @@
 package com.sedo.AxBitTest.models;
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -33,11 +32,15 @@ public class Book {
 		this.isbn = isbn;
 	}
 
-//	public List<Author> getAuthors() {
-//		return authors;
-//	}
-//
-//	public void setAuthors(List<Author> authors) {
-//		this.authors = authors;
-//	}
+	public Set<Author> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(Set<Author> authors) {
+		this.authors = authors;
+	}
+
+	static public boolean validateIsbn(long isbn) {
+		return Long.toString(isbn).length() == 13;
+	}
 }

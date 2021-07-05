@@ -1,7 +1,9 @@
 package com.sedo.AxBitTest.controllers;
 
 import com.sedo.AxBitTest.models.Author;
+import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.repo.AuthorRepository;
+import com.sedo.AxBitTest.repo.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,14 +12,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.sql.Date;
-import java.util.ArrayList;
 import java.util.Optional;
+import java.util.Set;
 
 @Controller
 public class AuthorController {
 
 	@Autowired
 	private AuthorRepository authorRepository;
+
+	@Autowired
+	private BookRepository bookRepository;
 
 	@GetMapping("/authors")
 	public String authors(Model model) {
@@ -87,16 +92,55 @@ public class AuthorController {
 		return "redirect:/authors";
 	}
 
+	@PostMapping("/authors/{id}/edit/book")
+	public String authorEditBookPost(@PathVariable(value = "id") long id, @RequestParam String isbn) {
+		long parsedIsbn = Long.parseLong(isbn);
+		if (!Book.validateIsbn(parsedIsbn)) {
+			return "redirect:/authors/" + id + "/edit";
+		}
+		if (!authorRepository.existsById(id)) {
+			return "redirect:/authors/" + id + "/edit";
+		}
+		Optional<Author> author = authorRepository.findById(id);
+		if (author.isPresent()) {
+			Iterable<Book> allBooks = bookRepository.findAll();
+			Book foundBook = null;
+			boolean bookExists = false;
+			for (Book book : allBooks) {
+				if (book.getIsbn() == parsedIsbn) {
+					bookExists = true;
+					foundBook = book;
+					break;
+				}
+			}
+			if (!bookExists) {
+				return "redirect:/authors/" + id + "/edit";
+			}
+			Set<Book> authorBooks = author.get().getBooks();
+			boolean alreadyHave = false;
+			for (Book book : authorBooks) {
+				if (book.getIsbn() == parsedIsbn) {
+					alreadyHave = true;
+					foundBook = book;
+				}
+			}
+			if (alreadyHave) {
+				authorBooks.remove(foundBook);
+			} else {
+				authorBooks.add(foundBook);
+			}
+			authorRepository.save(author.get());
+		}
+		return "redirect:/authors/" + id + "/edit";
+	}
+
 	@PostMapping("/authors/{id}/delete")
 	public String authorRemovePost(@PathVariable(value = "id") long id, Model model) {
 		if (!authorRepository.existsById(id)) {
 			return "redirect:/authors";
 		}
 		Optional<Author> author = authorRepository.findById(id);
-		if (author.isPresent()) {
-			authorRepository.delete(author.get());
-			return "redirect:/authors";
-		}
+		author.ifPresent(authorRepository::delete);
 		return "redirect:/authors";
 	}
 }
