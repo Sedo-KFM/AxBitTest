@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import java.sql.Date;
 import java.util.Optional;
 import java.util.Set;
 
@@ -87,41 +86,22 @@ public class GenreController {
 	}
 
 	@PostMapping("/genres/{id}/edit/book")
-	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam String isbn) {
-		long parsedIsbn = Long.parseLong(isbn.replace("-", ""));
-		if (!Book.validateIsbn(parsedIsbn)) {
-			return "redirect:/genres/" + id + "/edit";
-		}
+	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
 		if (!genreRepository.existsById(id)) {
 			return "redirect:/genres/" + id + "/edit";
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
 			Iterable<Book> allBooks = bookRepository.findAll();
-			Book foundBook = null;
-			boolean bookExists = false;
-			for (Book book : allBooks) {
-				if (book.getIsbn() == parsedIsbn) {
-					bookExists = true;
-					foundBook = book;
-					break;
-				}
-			}
-			if (!bookExists) {
+			Optional<Book> foundBook = bookRepository.findById(bookId);
+			if (foundBook.isEmpty()) {
 				return "redirect:/genres/" + id + "/edit";
 			}
 			Set<Book> genreBooks = genre.get().getBooks();
-			boolean alreadyHave = false;
-			for (Book book : genreBooks) {
-				if (book.getIsbn() == parsedIsbn) {
-					alreadyHave = true;
-					foundBook = book;
-				}
-			}
-			if (alreadyHave) {
-				genreBooks.remove(foundBook);
+			if (genreBooks.contains(foundBook.get())) {
+				genreBooks.remove(foundBook.get());
 			} else {
-				genreBooks.add(foundBook);
+				genreBooks.add(foundBook.get());
 			}
 			genreRepository.save(genre.get());
 		}

@@ -2,6 +2,7 @@ package com.sedo.AxBitTest.models;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -82,6 +83,19 @@ public class Author {
 
 	public void setBooks(Set<Book> books) {
 		this.books = books;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Author author = (Author) o;
+		return id.equals(author.id) && name.equals(author.name) && surname.equals(author.surname) && Objects.equals(patronymic, author.patronymic) && birthdate.equals(author.birthdate);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, name, surname, patronymic, birthdate);
 	}
 
 	public String getFullName() {

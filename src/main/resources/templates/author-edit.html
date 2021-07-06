@@ -36,9 +36,9 @@
             </div>
             <div class="col">
                 <form th:action="'/authors/' + ${author.id} + '/edit/book'" method="post">
-                    <span class="on-input-label">Введите ISBN книги, которую хотите добавить или удалить</span>
+                    <span class="on-input-label">Введите ID книги, которую хотите добавить или удалить</span>
                     <div class="col-auto mw-200">
-                        <input type="text" class="form-control mb-3" name="isbn">
+                        <input type="text" class="form-control mb-3" name="bookId">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary mb-3">Подтвердить</button>

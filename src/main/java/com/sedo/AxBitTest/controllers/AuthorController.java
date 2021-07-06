@@ -93,41 +93,22 @@ public class AuthorController {
 	}
 
 	@PostMapping("/authors/{id}/edit/book")
-	public String authorEditBookPost(@PathVariable(value = "id") long id, @RequestParam String isbn) {
-		long parsedIsbn = Long.parseLong(isbn.replace("-", ""));
-		if (!Book.validateIsbn(parsedIsbn)) {
-			return "redirect:/authors/" + id + "/edit";
-		}
+	public String authorEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
 		if (!authorRepository.existsById(id)) {
 			return "redirect:/authors/" + id + "/edit";
 		}
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			Iterable<Book> allBooks = bookRepository.findAll();
-			Book foundBook = null;
-			boolean bookExists = false;
-			for (Book book : allBooks) {
-				if (book.getIsbn() == parsedIsbn) {
-					bookExists = true;
-					foundBook = book;
-					break;
-				}
-			}
-			if (!bookExists) {
+			Optional<Book> foundBook = bookRepository.findById(bookId);
+			if (foundBook.isEmpty()) {
 				return "redirect:/authors/" + id + "/edit";
 			}
 			Set<Book> authorBooks = author.get().getBooks();
-			boolean alreadyHave = false;
-			for (Book book : authorBooks) {
-				if (book.getIsbn() == parsedIsbn) {
-					alreadyHave = true;
-					foundBook = book;
-				}
-			}
-			if (alreadyHave) {
-				authorBooks.remove(foundBook);
+			if (authorBooks.contains(foundBook.get())) {
+				authorBooks.remove(foundBook.get());
 			} else {
-				authorBooks.add(foundBook);
+				authorBooks.add(foundBook.get());
 			}
 			authorRepository.save(author.get());
 		}
