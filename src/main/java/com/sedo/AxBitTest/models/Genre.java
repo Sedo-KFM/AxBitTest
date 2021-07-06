@@ -12,8 +12,8 @@ public class Genre {
 	private String name;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "book_genre",
-			joinColumns = @JoinColumn(name = "book_id"),
-			inverseJoinColumns = @JoinColumn(name = "genre_id")
+			joinColumns = @JoinColumn(name = "genre_id"),
+			inverseJoinColumns = @JoinColumn(name = "book_id")
 	)
 	private Set<Book> books;
 
