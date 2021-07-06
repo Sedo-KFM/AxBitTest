@@ -12,32 +12,26 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
-            <li class="breadcrumb-item"><a href="/authors">Авторы</a></li>
+            <li class="breadcrumb-item"><a href="/books">Книги</a></li>
             <li class="breadcrumb-item active" aria-current="page">Редактирование</li>
         </ol>
     </nav>
     <br/>
-    <h1 class="main-label">Введите данные автора:</h1>
+    <h1 class="main-label">Введите данные книги:</h1>
     <div class="container">
         <div class="row">
             <div class="col">
                 <form method="post">
-                    <span class="on-input-label">Фамилия</span>
-                    <input type="text" class="form-control mb-3" name="surname" th:value="${author.surname}">
-                    <span class="on-input-label">Имя</span>
-                    <input type="text" class="form-control mb-3" name="name" th:value="${author.name}">
-                    <span class="on-input-label">Отчество</span>
-                    <input type="text" class="form-control mb-3" name="patronymic" th:value="${author.patronymic}">
-                    <span class="on-input-label">Дата рождения</span>
-                    <input type="date" class="form-control mb-3" name="birthdate" th:value="${author.birthdate}">
+                    <span class="on-input-label">ISBN</span>
+                    <input type="text" class="form-control mb-3" name="isbn" th:value="${book.stringedIsbn}">
                     <button type="submit" class="btn btn-primary form-submit-button">Сохранить</button>
                 </form>
             </div>
             <div class="col">
-                <form th:action="'/authors/' + ${author.id} + '/edit/book'" method="post">
-                    <span class="on-input-label">Введите код книги, которую хотите добавить или удалить</span>
+                <form th:action="'/books/' + ${book.id} + '/edit/author'" method="post">
+                    <span class="on-input-label">Введите ID автора, которого хотите добавить или удалить</span>
                     <div class="col-auto">
-                        <input type="text" class="form-control mb-3" name="isbn">
+                        <input type="text" class="form-control mb-3" name="authorId">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary mb-3">Подтвердить</button>

@@ -9,15 +9,40 @@
 </head>
 <body>
 <div class="main-container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Книги</li>
+        </ol>
+    </nav>
+    <br/>
     <h1>Спискок книг:</h1>
-    <ul class="list-group">
-        <li th:each="book : ${books}" class="list-group-item">
-            <span th:text="${book.isbn}"/>
-        </li>
-        <li class="list-group-item">
-            <a class="btn btn-primary" href="/books/add" role="button">Добавить книгу</a>
-        </li>
-    </ul>
+    </br>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">ISBN</th>
+                <th scope="col">Функции</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <th th:text="${book.stringedIsbn}" scope="row"/>
+                <td>
+                    <form th:action="'/books/' + ${book.id} + '/delete'" method="post">
+                        <div class="btn-group" role="group" aria-label="Basic outlined example">
+                            <a th:href="'/books/' + ${book.id}" type="button" class="btn btn-outline-primary">Информация</a>
+                            <a th:href="'/books/' + ${book.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
+                            <button type="submit" class="rounded-end btn btn-outline-primary">Удалить</button>
+                        </div>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <a class="btn btn-primary" href="/books/add" role="button">Добавить книгу</a>
+    </div>
 </div>
 </body>
 <style>
@@ -28,6 +53,12 @@
 
     .main-container {
         padding: 10vh 10vw 0 10vw;
+    }
+
+    .table-container {
+        border-radius:0.2rem;
+        background-color:#fff;
+        padding: 16px 10px;
     }
 </style>
 </html>

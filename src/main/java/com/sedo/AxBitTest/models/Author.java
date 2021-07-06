@@ -83,4 +83,8 @@ public class Author {
 	public void setBooks(Set<Book> books) {
 		this.books = books;
 	}
+
+	public String getFullName() {
+		return this.surname + " " + this.name.charAt(0) + ". " + this.patronymic.charAt(0) + ".";
+	}
 }

@@ -12,35 +12,29 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
-            <li class="breadcrumb-item"><a href="/authors">Авторы</a></li>
+            <li class="breadcrumb-item"><a href="/books">Книги</a></li>
             <li class="breadcrumb-item active" aria-current="page">Информация</li>
         </ol>
     </nav>
     <br/>
-    <h1 class="main-label">Данные автора:</h1><br/>
+    <h1 class="main-label">Данные книги:</h1><br/>
     <div class="container">
         <div class="row">
             <div class="col">
-                <h5>Личные данные</h5>
+                <h5>Данные</h5>
                 <div class="white-space-container">
                     <h6>ID</h6>
-                    <span th:text="${author.id}" /><br/><br/>
-                    <h6>Фамилия</h6>
-                    <span th:text="${author.surname}" /><br/><br/>
-                    <h6>Имя</h6>
-                    <span th:text="${author.name}" /><br/><br/>
-                    <h6>Отчество</h6>
-                    <span th:text="${author.patronymic}" /><br/><br/>
-                    <h6>Дата рождения</h6>
-                    <span th:text="${author.birthdate}" /><br/>
+                    <span th:text="${book.id}" /><br/><br/>
+                    <h6>ISBN</h6>
+                    <span th:text="${book.stringedIsbn}" /><br/>
                 </div>
             </div>
             <div class="col">
-                <h5>Список книг</h5>
+                <h5>Список авторов</h5>
                 <form class="white-space-container">
                     <ul class="list-group">
-                        <li th:each="book : ${author.books}" class="list-group-item">
-                            <span th:text="${book.stringedIsbn}"/>
+                        <li th:each="author : ${book.authors}" class="list-group-item">
+                            <span th:text="${author.fullName}"/>
                         </li>
                     </ul>
                 </form>
