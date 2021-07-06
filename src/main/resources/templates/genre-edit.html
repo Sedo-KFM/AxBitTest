@@ -6,36 +6,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/main.css">
-    <title>Редактирование автора</title>
+    <title>Редактирование книги</title>
 </head>
 <body>
 <div class="main-container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
-            <li class="breadcrumb-item"><a href="/authors">Авторы</a></li>
+            <li class="breadcrumb-item"><a href="/genres">Жанры</a></li>
             <li class="breadcrumb-item active" aria-current="page">Редактирование</li>
         </ol>
     </nav>
     <br/>
-    <h1 class="main-label">Введите данные автора:</h1>
+    <h1 class="main-label">Введите данные жанра:</h1>
     <div class="container">
         <div class="row">
-            <div class="col mw-400">
+            <div class="col mw-200">
                 <form method="post">
-                    <span class="on-input-label">Фамилия</span>
-                    <input type="text" class="form-control mb-3" name="surname" th:value="${author.surname}">
-                    <span class="on-input-label">Имя</span>
-                    <input type="text" class="form-control mb-3" name="name" th:value="${author.name}">
-                    <span class="on-input-label">Отчество</span>
-                    <input type="text" class="form-control mb-3" name="patronymic" th:value="${author.patronymic}">
-                    <span class="on-input-label">Дата рождения</span>
-                    <input type="date" class="form-control mb-3" name="birthdate" th:value="${author.birthdate}">
+                    <span class="on-input-label">Название</span>
+                    <input type="text" class="form-control mb-3" name="isbn" th:value="${genre.name}">
                     <button type="submit" class="btn btn-primary form-submit-button">Сохранить</button>
                 </form>
             </div>
             <div class="col">
-                <form th:action="'/authors/' + ${author.id} + '/edit/book'" method="post">
+                <form th:action="'/genres/' + ${genre.id} + '/edit/book'" method="post">
                     <span class="on-input-label">Введите ISBN книги, которую хотите добавить или удалить</span>
                     <div class="col-auto mw-200">
                         <input type="text" class="form-control mb-3" name="isbn">
@@ -50,4 +44,26 @@
     </div>
 </div>
 </body>
+<style>
+    body {
+        background-color: #eee;
+        color: <div id="111"></div>;
+    }
+
+    .main-container {
+        padding: 10vh 10vw 0 10vw;
+    }
+
+    .main-label {
+        margin-bottom: 30px;
+    }
+
+    .on-input-label {
+        font-weight: 600;
+    }
+
+    .form-submit-button {
+        margin-top: 10px;
+    }
+</style>
 </html>

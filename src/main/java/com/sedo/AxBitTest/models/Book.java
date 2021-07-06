@@ -16,8 +16,18 @@ public class Book {
 			inverseJoinColumns = @JoinColumn(name = "author_id")
 	)
 	private Set<Author> authors;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "book_genre",
+			joinColumns = @JoinColumn(name = "book_id"),
+			inverseJoinColumns = @JoinColumn(name = "genre_id")
+	)
+	private Set<Genre> genres;
 
 	public Book() {
+	}
+
+	public Book(Long isbn) {
+		this.isbn = isbn;
 	}
 
 	public Long getId() {
@@ -26,10 +36,6 @@ public class Book {
 
 	public void setId(Long id) {
 		this.id = id;
-	}
-
-	public Book(Long isbn) {
-		this.isbn = isbn;
 	}
 
 	public Long getIsbn() {
@@ -46,6 +52,14 @@ public class Book {
 
 	public void setAuthors(Set<Author> authors) {
 		this.authors = authors;
+	}
+
+	public Set<Genre> getGenres() {
+		return genres;
+	}
+
+	public void setGenres(Set<Genre> genres) {
+		this.genres = genres;
 	}
 
 	static public boolean validateIsbn(long isbn) {

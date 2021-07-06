@@ -6,23 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/main.css">
-    <title>Добавление книги</title>
+    <title>Добавление жанра</title>
 </head>
 <body>
 <div class="main-container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
-            <li class="breadcrumb-item"><a href="/books">Книги</a></li>
+            <li class="breadcrumb-item"><a href="/genres">Жанры</a></li>
             <li class="breadcrumb-item active" aria-current="page">Добавление</li>
         </ol>
     </nav>
-    <h1 class="main-label">Введите данные книги:</h1>
-    <form action="/books/add" method="post">
-        <span class="on-input-label">ISBN</span>
-        <input type="text" class="form-control mb-3 mw-200" name="isbn">
+    <h1 class="main-label">Введите данные жанры:</h1>
+    <form action="/genres/add" method="post">
+        <span class="on-input-label">Название</span>
+        <input type="text" class="form-control mb-3 mw-200" name="name">
         <button type="submit" class="btn btn-primary form-submit-button">Добавить</button>
     </form>
 </div>
 </body>
+<style>
+    body {
+        background-color: #eee;
+        color: <div id="111"></div>;
+    }
+
+    .main-container {
+        padding: 10vh 50vw 0 10vw;
+    }
+
+    .main-label {
+        margin-bottom: 30px;
+    }
+
+    .on-input-label {
+        font-weight: 600;
+    }
+
+    .form-submit-button {
+        margin-top: 10px;
+    }
+</style>
 </html>

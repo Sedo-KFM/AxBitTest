@@ -1,0 +1,86 @@
+body {
+    background-color: #eee;
+    color: <div id="111"></div>;
+}
+
+.main-container {
+    padding: 10vh 10vw 0 10vw;
+}
+
+.main-container-narrow {
+    padding: 10vh 50vw 0 10vw;
+}
+
+.table-container {
+    border-radius:0.2rem;
+    background-color:#fff;
+    padding: 16px 10px;
+}
+
+.main-label {
+    margin-bottom: 30px;
+}
+
+.on-input-label {
+    font-weight: 600;
+}
+
+//.form-control {
+//    max-width: 400px;
+//}
+
+.form-submit-button {
+    margin-top: 10px;
+}
+
+.white-space-container {
+    border-radius:0.2rem;
+    background-color:#fff;
+    padding: 16px 10px;
+}
+
+.col {
+    padding: 0;
+    margin-right: 30px;
+}
+
+.row {
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.mw-200 {
+    max-width: 200px;
+}
+
+.mw-300 {
+    max-width: 300px;
+}
+
+.mw-400 {
+    max-width: 400px;
+}
+
+.mw-500 {
+    max-width: 500px;
+}
+
+.mw-600 {
+    max-width: 600px;
+}
+
+.mw-700 {
+    max-width: 700px;
+}
+
+.mw-800 {
+    max-width: 800px;
+}
+
+.mw-900 {
+    max-width: 900px;
+}
+
+.mw-1000 {
+    max-width: 1000px;
+}

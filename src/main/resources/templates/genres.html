@@ -6,35 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="/main.css">
-    <title>Книги</title>
+    <title>Жанры</title>
 </head>
 <body>
 <div class="main-container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="/">Домашнаяя страница</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Книги</li>
+            <li class="breadcrumb-item active" aria-current="page">Жанры</li>
         </ol>
     </nav>
     <br/>
-    <h1>Спискок книг:</h1>
+    <h1>Спискок жанров:</h1>
     </br>
     <div class="table-container mw-800">
         <table class="table">
             <thead>
             <tr>
-                <th scope="col">ISBN</th>
+                <th scope="col">Название</th>
                 <th scope="col">Функции</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="book : ${books}">
-                <th th:text="${book.stringedIsbn}" scope="row"/>
+            <tr th:each="genre : ${genres}">
+                <th th:text="${genre.name}" scope="row"/>
                 <td>
-                    <form th:action="'/books/' + ${book.id} + '/delete'" method="post">
+                    <form th:action="'/genres/' + ${genre.id} + '/delete'" method="post">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
-                            <a th:href="'/books/' + ${book.id}" type="button" class="btn btn-outline-primary">Информация</a>
-                            <a th:href="'/books/' + ${book.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
+                            <a th:href="'/genres/' + ${genre.id}" type="button" class="btn btn-outline-primary">Информация</a>
+                            <a th:href="'/genres/' + ${genre.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
                             <button type="submit" class="rounded-end btn btn-outline-primary">Удалить</button>
                         </div>
                     </form>
@@ -42,8 +42,24 @@
             </tr>
             </tbody>
         </table>
-        <a class="btn btn-primary" href="/books/add" role="button">Добавить книгу</a>
+        <a class="btn btn-primary" href="/genres/add" role="button">Добавить жанр</a>
     </div>
 </div>
 </body>
+<style>
+    body {
+        background-color: #eee;
+        color: <div id="111"></div>;
+    }
+
+    .main-container {
+        padding: 10vh 10vw 0 10vw;
+    }
+
+    .table-container {
+        border-radius:0.2rem;
+        background-color:#fff;
+        padding: 16px 10px;
+    }
+</style>
 </html>

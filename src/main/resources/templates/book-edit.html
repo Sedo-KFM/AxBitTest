@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>Home</title>
+    <link rel="stylesheet" href="/main.css">
+    <title>Редактирование книги</title>
 </head>
 <body>
 <div class="main-container">
@@ -20,7 +21,7 @@
     <h1 class="main-label">Введите данные книги:</h1>
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col mw-200">
                 <form method="post">
                     <span class="on-input-label">ISBN</span>
                     <input type="text" class="form-control mb-3" name="isbn" th:value="${book.stringedIsbn}">
@@ -30,39 +31,16 @@
             <div class="col">
                 <form th:action="'/books/' + ${book.id} + '/edit/author'" method="post">
                     <span class="on-input-label">Введите ID автора, которого хотите добавить или удалить</span>
-                    <div class="col-auto">
+                    <div class="col-auto mw-200">
                         <input type="text" class="form-control mb-3" name="authorId">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary mb-3">Подтвердить</button>
                     </div>
-
                 </form>
             </div>
         </div>
     </div>
 </div>
 </body>
-<style>
-    body {
-        background-color: #eee;
-        color: <div id="111"></div>;
-    }
-
-    .main-container {
-        padding: 10vh 10vw 0 10vw;
-    }
-
-    .main-label {
-        margin-bottom: 30px;
-    }
-
-    .on-input-label {
-        font-weight: 600;
-    }
-
-    .form-submit-button {
-        margin-top: 10px;
-    }
-</style>
 </html>
