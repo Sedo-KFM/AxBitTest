@@ -24,13 +24,4 @@ public class MainController {
 	public String home(Model model) {
 		return "home";
 	}
-
-	@GetMapping("/test")
-	public String test(Model model) {
-		Iterable<Author> authors = authorRepository.findAll();
-		Author firstAuthor = authors.iterator().next();
-		Iterable<Book> books = bookRepository.findAll();
-		Book firstBook = books.iterator().next();
-		return "authors";
-	}
 }

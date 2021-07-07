@@ -24,7 +24,7 @@
             <div class="col mw-200">
                 <form method="post">
                     <span class="on-input-label">Название</span>
-                    <input type="text" class="form-control mb-3" name="isbn" th:value="${genre.name}">
+                    <input type="text" class="form-control mb-3" name="name" th:value="${genre.name}">
                     <button type="submit" class="btn btn-primary form-submit-button">Сохранить</button>
                 </form>
             </div>
@@ -32,7 +32,7 @@
                 <form th:action="'/genres/' + ${genre.id} + '/edit/book'" method="post">
                     <span class="on-input-label">Введите ID книги, которую хотите добавить или удалить</span>
                     <div class="col-auto mw-200">
-                        <input type="text" class="form-control mb-3" name="isbn">
+                        <input type="text" class="form-control mb-3" name="bookId">
                     </div>
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary mb-3">Подтвердить</button>
