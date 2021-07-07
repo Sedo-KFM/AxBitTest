@@ -1,5 +1,6 @@
 package com.sedo.AxBitTest.models;
 
+import com.sedo.AxBitTest.helpers.SetHelper;
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.Objects;
@@ -19,8 +20,12 @@ public class Author {
 			inverseJoinColumns = @JoinColumn(name = "book_id")
 	)
 	private Set<Book> books;
+	private final Date creationDate;
+	private final Date modificationDate;
 
 	public Author() {
+		this.creationDate = new Date(System.currentTimeMillis());
+		this.modificationDate = new Date(System.currentTimeMillis());
 	}
 
 	public Author(String name, String surname, String patronymic, Date birthdate) {
@@ -28,6 +33,8 @@ public class Author {
 		this.surname = surname;
 		this.patronymic = patronymic;
 		this.birthdate = birthdate;
+		this.creationDate = new Date(System.currentTimeMillis());
+		this.modificationDate = new Date(System.currentTimeMillis());
 	}
 
 	public void edit(String name, String surname, String patronymic, Date birthdate) {
@@ -35,14 +42,11 @@ public class Author {
 		this.surname = surname;
 		this.patronymic = patronymic;
 		this.birthdate = birthdate;
+		this.modificationDate.setTime(System.currentTimeMillis());
 	}
 
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public String getName() {
@@ -50,7 +54,10 @@ public class Author {
 	}
 
 	public void setName(String name) {
-		this.name = name;
+		if (!this.name.equals(name)) {
+			this.name = name;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public String getSurname() {
@@ -58,7 +65,10 @@ public class Author {
 	}
 
 	public void setSurname(String surname) {
-		this.surname = surname;
+		if (!this.surname.equals(surname)) {
+			this.surname = surname;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public String getPatronymic() {
@@ -66,7 +76,10 @@ public class Author {
 	}
 
 	public void setPatronymic(String patronymic) {
-		this.patronymic = patronymic;
+		if (!this.patronymic.equals(patronymic)) {
+			this.patronymic = patronymic;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public Date getBirthdate() {
@@ -74,7 +87,10 @@ public class Author {
 	}
 
 	public void setBirthdate(Date birthdate) {
-		this.birthdate = birthdate;
+		if (!this.birthdate.equals(birthdate)) {
+			this.birthdate = birthdate;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public Set<Book> getBooks() {
@@ -82,7 +98,25 @@ public class Author {
 	}
 
 	public void setBooks(Set<Book> books) {
-		this.books = books;
+		if (!this.books.equals(books)) {
+			for (Book  book : SetHelper.SetDifference(this.books, books)) {
+				book.updateModificationDate();
+			}
+			this.books = books;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getModificationDate() {
+		return modificationDate;
+	}
+
+	public void updateModificationDate() {
+		this.modificationDate.setTime(System.currentTimeMillis());
 	}
 
 	@Override

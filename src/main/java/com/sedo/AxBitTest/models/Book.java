@@ -1,6 +1,9 @@
 package com.sedo.AxBitTest.models;
 
+import com.sedo.AxBitTest.helpers.SetHelper;
+
 import javax.persistence.*;
+import java.sql.Date;
 import java.util.Set;
 
 @Entity
@@ -22,20 +25,22 @@ public class Book {
 			inverseJoinColumns = @JoinColumn(name = "genre_id")
 	)
 	private Set<Genre> genres;
+	private final Date creationDate;
+	private final Date modificationDate;
 
 	public Book() {
+		this.creationDate = new Date(System.currentTimeMillis());
+		this.modificationDate = new Date(System.currentTimeMillis());
 	}
 
 	public Book(Long isbn) {
 		this.isbn = isbn;
+		this.creationDate = new Date(System.currentTimeMillis());
+		this.modificationDate = new Date(System.currentTimeMillis());
 	}
 
 	public Long getId() {
 		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
 	}
 
 	public Long getIsbn() {
@@ -43,7 +48,10 @@ public class Book {
 	}
 
 	public void setIsbn(Long isbn) {
-		this.isbn = isbn;
+		if (!this.isbn.equals(isbn)) {
+			this.isbn = isbn;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public Set<Author> getAuthors() {
@@ -51,7 +59,13 @@ public class Book {
 	}
 
 	public void setAuthors(Set<Author> authors) {
-		this.authors = authors;
+		if (!this.authors.equals(authors)) {
+			for (Author author : SetHelper.SetDifference(this.authors, authors)) {
+				author.updateModificationDate();
+			}
+			this.authors = authors;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
 	}
 
 	public Set<Genre> getGenres() {
@@ -59,7 +73,25 @@ public class Book {
 	}
 
 	public void setGenres(Set<Genre> genres) {
-		this.genres = genres;
+		if (!this.genres.equals(genres)) {
+			for (Genre genre : SetHelper.SetDifference(this.genres, genres)) {
+				genre.updateModificationDate();
+			}
+			this.genres = genres;
+			this.modificationDate.setTime(System.currentTimeMillis());
+		}
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public Date getModificationDate() {
+		return modificationDate;
+	}
+
+	public void updateModificationDate() {
+		this.modificationDate.setTime(System.currentTimeMillis());
 	}
 
 	static public boolean validateIsbn(long isbn) {
