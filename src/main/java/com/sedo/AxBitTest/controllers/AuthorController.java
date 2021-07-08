@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.sql.Date;
 import java.util.Optional;
@@ -21,6 +22,7 @@ import java.util.Set;
 public class AuthorController {
 
 	private final StringBuilder message = new StringBuilder("");
+	private Long lastAddedAuthorId = null;
 
 	@Autowired
 	private AuthorRepository authorRepository;
@@ -39,6 +41,7 @@ public class AuthorController {
 	@GetMapping("/authors/add")
 	public String authorsAdd(Model model) {
 		MessageToModelTransfer.transferMessage(this.message, model);
+		this.lastAddedAuthorId = null;
 		return "authors-add";
 	}
 
@@ -76,6 +79,7 @@ public class AuthorController {
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
+		this.lastAddedAuthorId = id;
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			model.addAttribute("author", author.get());
@@ -163,4 +167,13 @@ public class AuthorController {
 		return "redirect:" + exception.getUri();
 	}
 
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	public String handleException(MethodArgumentTypeMismatchException exception) {
+		this.message.append(("Некорректная дата"));
+		if (this.lastAddedAuthorId == null) {
+			return "redirect:/authors/add";
+		} else {
+			return "redirect:/authors/" + this.lastAddedAuthorId + "/edit";
+		}
+	}
 }

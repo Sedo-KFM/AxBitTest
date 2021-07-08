@@ -159,7 +159,10 @@ public class BookController {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
-		book.ifPresent(bookRepository::delete);
+		if (book.isPresent()) {
+			bookRepository.delete(book.get());
+			return "redirect:/books";
+		}
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
