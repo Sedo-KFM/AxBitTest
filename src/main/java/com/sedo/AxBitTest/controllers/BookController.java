@@ -1,6 +1,9 @@
 package com.sedo.AxBitTest.controllers;
 
-import com.sedo.AxBitTest.exceptions.InputDataParseException;
+import com.sedo.AxBitTest.exceptions.IncorrectIdException;
+import com.sedo.AxBitTest.exceptions.InputDataValidateException;
+import com.sedo.AxBitTest.exceptions.ViolatedDataException;
+import com.sedo.AxBitTest.helpers.MessageToModelTransfer;
 import com.sedo.AxBitTest.models.Author;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.models.Genre;
@@ -11,16 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 @Controller
 public class BookController {
 
-	private String message;
+	private final StringBuilder message = new StringBuilder("");
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -33,6 +33,7 @@ public class BookController {
 
 	@GetMapping("/books")
 	public String books(Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Book> books = bookRepository.findAll();
 		model.addAttribute("books", books);
 		return "books";
@@ -40,10 +41,7 @@ public class BookController {
 
 	@GetMapping("/books/add")
 	public String booksAdd(Model model) {
-		if (this.message != null) {
-			model.addAttribute("message", message);
-			this.message = null;
-		}
+		MessageToModelTransfer.transferMessage(this.message, model);
 		return "books-add";
 	}
 
@@ -53,10 +51,10 @@ public class BookController {
 		try {
 			parsedIsbn = Long.parseLong(isbn);
 		} catch (NumberFormatException numberFormatException) {
-			throw new InputDataParseException("/books/add", "ISBN must be consist of numbers only");
+			throw new InputDataValidateException("/books/add", "ISBN должен состоять только из цифр");
 		}
 		if (Long.toString(parsedIsbn).length() != 13) {
-			throw new InputDataParseException("/books/add", "ISBN must be consist of 13 numbers");
+			throw new InputDataValidateException("/books/add", "ISBN должен состоять из 13 цифр");
 		}
 		Book book = new Book(parsedIsbn);
 		bookRepository.save(book);
@@ -65,28 +63,30 @@ public class BookController {
 
 	@GetMapping("/books/{id}")
 	public String book(@PathVariable(value = "id") long id, Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			model.addAttribute("book", book.get());
 			return "book";
 		}
-		return "redirect:/books";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
 	@GetMapping("/books/{id}/edit")
 	public String bookEdit(@PathVariable(value = "id") long id, Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			model.addAttribute("book", book.get());
 			return "book-edit";
 		}
-		return "redirect:/books";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
 	@PostMapping("/books/{id}/edit")
@@ -94,7 +94,7 @@ public class BookController {
 								@RequestParam String isbn,
 								Model model) {
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
@@ -104,20 +104,21 @@ public class BookController {
 				bookRepository.save(book.get());
 				return "redirect:/books";
 			}
+			throw new InputDataValidateException("/books/" + id + "/edit", "ISBN некорректен");
 		}
-		return "redirect:/authors";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
 	@PostMapping("/books/{id}/edit/author")
 	public String bookEditAuthorPost(@PathVariable(value = "id") long id, @RequestParam long authorId) {
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books/" + id + "/edit";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			Optional<Author> foundAuthor = authorRepository.findById(authorId);
 			if (foundAuthor.isEmpty()) {
-				return "redirect:/books/" + id + "/edit";
+				throw new IncorrectIdException("/books/" + id +"/edit", "Указанного автора не существует");
 			}
 			Set<Author> bookAuthors = book.get().getAuthors();
 			if (bookAuthors.contains(foundAuthor.get())) {
@@ -127,19 +128,19 @@ public class BookController {
 			}
 			authorRepository.save(foundAuthor.get());
 		}
-		return "redirect:/books/" + id + "/edit";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
 	@PostMapping("/books/{id}/edit/genre")
 	public String bookEditGenrePost(@PathVariable(value = "id") long id, @RequestParam long genreId) {
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books/" + id + "/edit";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		if (book.isPresent()) {
 			Optional<Genre> foundGenre = genreRepository.findById(genreId);
 			if (foundGenre.isEmpty()) {
-				return "redirect:/books/" + id + "/edit";
+				throw new IncorrectIdException("/books/" + id +"/edit", "Указанного жанра не существует");
 			}
 			Set<Genre> bookGenres = book.get().getGenres();
 			if (bookGenres.contains(foundGenre.get())) {
@@ -149,22 +150,34 @@ public class BookController {
 			}
 			genreRepository.save(foundGenre.get());
 		}
-		return "redirect:/books/" + id + "/edit";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
 	@PostMapping("/books/{id}/delete")
 	public String bookRemovePost(@PathVariable(value = "id") long id, Model model) {
 		if (!bookRepository.existsById(id)) {
-			return "redirect:/books";
+			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
 		Optional<Book> book = bookRepository.findById(id);
 		book.ifPresent(bookRepository::delete);
-		return "redirect:/books";
+		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@ExceptionHandler(InputDataParseException.class)
-	public String handleException(InputDataParseException exception) {
-		this.message = exception.getMessage();
+	@ExceptionHandler(InputDataValidateException.class)
+	public String handleException(InputDataValidateException exception) {
+		this.message.append(exception.getMessage());
+		return "redirect:" + exception.getUri();
+	}
+
+	@ExceptionHandler(IncorrectIdException.class)
+	public String handleException(IncorrectIdException exception) {
+		this.message.append(exception.getMessage());
+		return "redirect:" + exception.getUri();
+	}
+
+	@ExceptionHandler(ViolatedDataException.class)
+	public String handleException(ViolatedDataException exception) {
+		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 }

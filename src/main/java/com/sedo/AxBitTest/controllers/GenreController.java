@@ -1,5 +1,9 @@
 package com.sedo.AxBitTest.controllers;
 
+import com.sedo.AxBitTest.exceptions.IncorrectIdException;
+import com.sedo.AxBitTest.exceptions.InputDataValidateException;
+import com.sedo.AxBitTest.exceptions.ViolatedDataException;
+import com.sedo.AxBitTest.helpers.MessageToModelTransfer;
 import com.sedo.AxBitTest.models.Genre;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.repo.GenreRepository;
@@ -7,15 +11,15 @@ import com.sedo.AxBitTest.repo.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 import java.util.Set;
 
 @Controller
 public class GenreController {
+
+	private final StringBuilder message = new StringBuilder("");
 
 	@Autowired
 	private GenreRepository genreRepository;
@@ -25,6 +29,7 @@ public class GenreController {
 
 	@GetMapping("/genres")
 	public String genres(Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Genre> genres = genreRepository.findAll();
 		model.addAttribute("genres", genres);
 		return "genres";
@@ -32,12 +37,16 @@ public class GenreController {
 
 	@GetMapping("/genres/add")
 	public String genresAdd(Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		return "genres-add";
 	}
 
 	@PostMapping("/genres/add")
 	public String genresAddPost(@RequestParam String name,
 								 Model model) {
+		if (name.equals("")) {
+			throw new InputDataValidateException("/genres/add", "Все поля должны быть заполнены");
+		}
 		Genre genre = new Genre(name);
 		genreRepository.save(genre);
 		return "redirect:/genres";
@@ -45,28 +54,30 @@ public class GenreController {
 
 	@GetMapping("/genres/{id}")
 	public String genre(@PathVariable(value = "id") long id, Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!genreRepository.existsById(id)) {
-			return "redirect:/genres";
+			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
 			model.addAttribute("genre", genre.get());
 			return "genre";
 		}
-		return "redirect:/genres";
+		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
 	@GetMapping("/genres/{id}/edit")
 	public String genreEdit(@PathVariable(value = "id") long id, Model model) {
+		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!genreRepository.existsById(id)) {
-			return "redirect:/genres";
+			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
 			model.addAttribute("genre", genre.get());
 			return "genre-edit";
 		}
-		return "redirect:/genres";
+		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
 	@PostMapping("/genres/{id}/edit")
@@ -74,7 +85,7 @@ public class GenreController {
 								  @RequestParam String name,
 								  Model model) {
 		if (!genreRepository.existsById(id)) {
-			return "redirect:/genres";
+			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
@@ -82,13 +93,13 @@ public class GenreController {
 			genreRepository.save(genre.get());
 			return "redirect:/genres";
 		}
-		return "redirect:/genres";
+		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
 	@PostMapping("/genres/{id}/edit/book")
 	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
 		if (!genreRepository.existsById(id)) {
-			return "redirect:/genres/" + id + "/edit";
+			throw new IncorrectIdException("/genres/" + id +"/edit", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
@@ -105,16 +116,37 @@ public class GenreController {
 			}
 			genreRepository.save(genre.get());
 		}
-		return "redirect:/genres/" + id + "/edit";
+		throw new ViolatedDataException("/genres/" + id + "/edit", "Данные жанры нарушены");
 	}
 
 	@PostMapping("/genres/{id}/delete")
 	public String genreRemovePost(@PathVariable(value = "id") long id, Model model) {
 		if (!genreRepository.existsById(id)) {
-			return "redirect:/genres";
+			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
-		genre.ifPresent(genreRepository::delete);
-		return "redirect:/genres";
+		if (genre.isPresent()) {
+			genreRepository.delete(genre.get());
+			return "redirect:/genres/";
+		}
+		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
+	}
+
+	@ExceptionHandler(InputDataValidateException.class)
+	public String handleException(InputDataValidateException exception) {
+		this.message.append(exception.getMessage());
+		return "redirect:" + exception.getUri();
+	}
+
+	@ExceptionHandler(IncorrectIdException.class)
+	public String handleException(IncorrectIdException exception) {
+		this.message.append(exception.getMessage());
+		return "redirect:" + exception.getUri();
+	}
+
+	@ExceptionHandler(ViolatedDataException.class)
+	public String handleException(ViolatedDataException exception) {
+		this.message.append(exception.getMessage());
+		return "redirect:" + exception.getUri();
 	}
 }

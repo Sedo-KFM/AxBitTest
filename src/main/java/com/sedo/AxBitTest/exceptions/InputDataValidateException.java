@@ -1,10 +1,10 @@
 package com.sedo.AxBitTest.exceptions;
 
-public class InputDataParseException extends RuntimeException{
+public class InputDataValidateException extends RuntimeException {
 
 	private String uri;
 
-	public InputDataParseException(String uri, String message) {
+	public InputDataValidateException(String uri, String message) {
 		super(message);
 		this.uri = uri;
 	}
