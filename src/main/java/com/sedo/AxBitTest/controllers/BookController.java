@@ -1,5 +1,6 @@
 package com.sedo.AxBitTest.controllers;
 
+import com.sedo.AxBitTest.exceptions.InputDataParseException;
 import com.sedo.AxBitTest.models.Author;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.models.Genre;
@@ -9,16 +10,17 @@ import com.sedo.AxBitTest.repo.GenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 @Controller
 public class BookController {
+
+	private String message;
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -38,14 +40,23 @@ public class BookController {
 
 	@GetMapping("/books/add")
 	public String booksAdd(Model model) {
+		if (this.message != null) {
+			model.addAttribute("message", message);
+			this.message = null;
+		}
 		return "books-add";
 	}
 
 	@PostMapping("/books/add")
 	public String booksAddPost(@RequestParam String isbn, Model model) {
-		long parsedIsbn = Long.parseLong(isbn);
+		long parsedIsbn;
+		try {
+			parsedIsbn = Long.parseLong(isbn);
+		} catch (NumberFormatException numberFormatException) {
+			throw new InputDataParseException("/books/add", "ISBN must be consist of numbers only");
+		}
 		if (Long.toString(parsedIsbn).length() != 13) {
-			return "error";
+			throw new InputDataParseException("/books/add", "ISBN must be consist of 13 numbers");
 		}
 		Book book = new Book(parsedIsbn);
 		bookRepository.save(book);
@@ -149,5 +160,11 @@ public class BookController {
 		Optional<Book> book = bookRepository.findById(id);
 		book.ifPresent(bookRepository::delete);
 		return "redirect:/books";
+	}
+
+	@ExceptionHandler(InputDataParseException.class)
+	public String handleException(InputDataParseException exception) {
+		this.message = exception.getMessage();
+		return "redirect:" + exception.getUri();
 	}
 }

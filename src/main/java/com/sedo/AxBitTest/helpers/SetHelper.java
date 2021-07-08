@@ -1,5 +1,7 @@
 package com.sedo.AxBitTest.helpers;
 
+import org.hibernate.collection.internal.PersistentSet;
+
 import java.util.HashSet;
 import java.util.Set;
 
