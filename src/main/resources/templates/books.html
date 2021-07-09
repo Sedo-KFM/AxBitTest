@@ -36,7 +36,7 @@
                     <form th:action="'/books/' + ${book.id} + '/delete'" method="post">
                         <div class="btn-group" role="group" aria-label="Basic outlined example">
                             <a th:href="'/books/' + ${book.id}" type="button" class="btn btn-outline-primary">Информация</a>
-                            <a th:href="'/books/' + ${book.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
+                            <a th:href="'/books/' + ${book.id} + '/editing'" type="button" class="btn btn-outline-primary">Изменить</a>
                             <button type="submit" class="rounded-end btn btn-outline-primary">Удалить</button>
                         </div>
                     </form>
@@ -44,7 +44,7 @@
             </tr>
             </tbody>
         </table>
-        <a class="btn btn-primary" href="/books/add" role="button">Добавить книгу</a>
+        <a class="btn btn-primary" href="/books/adding" role="button">Добавить книгу</a>
     </div>
 </div>
 <div th:replace="fragments/toasts.html :: toasts"> </div>

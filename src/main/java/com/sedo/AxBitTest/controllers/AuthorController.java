@@ -42,28 +42,28 @@ public class AuthorController {
 		return "authors";
 	}
 
-	@GetMapping("/authors/add")
+	@GetMapping("/authors/adding")
 	public String authorsAdd(Model model) {
-		logger.trace("GET /authors/add");
+		logger.trace("GET /authors/adding");
 		MessageToModelTransfer.transferMessage(this.message, model);
 		this.lastAddedAuthorId = null;
-		return "authors-add";
+		return "authors-adding";
 	}
 
-	@PostMapping("/authors/add")
+	@PostMapping("/authors/adding")
 	public String authorsAddPost(@RequestParam String surname,
 								 @RequestParam String name,
 								 @RequestParam String patronymic,
 								 @RequestParam Date birthdate,
 								 Model model) {
-		logger.trace("POST /authors/add " +
+		logger.trace("POST /authors/adding " +
 				"surname=\"{}\" " +
 				"name=\"{}\" " +
 				"patronymic=\"{}\" " +
 				"birthdate=\"{}\"",
 				surname, name, patronymic, birthdate);
 		if (surname.equals("") || name.equals("") || patronymic.equals("") || birthdate == null) {
-			throw new InputDataValidateException("/authors/add", "Все поля должны быть заполнены");
+			throw new InputDataValidateException("/authors/adding", "Все поля должны быть заполнены");
 		}
 		Author author = new Author(name, surname, patronymic, birthdate);
 		authorRepository.save(author);
@@ -85,9 +85,9 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@GetMapping("/authors/{id}/edit")
+	@GetMapping("/authors/{id}/editing")
 	public String authorEdit(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /authors/{}/edit", id);
+		logger.trace("GET /authors/{}/editing", id);
 		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
@@ -96,19 +96,19 @@ public class AuthorController {
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			model.addAttribute("author", author.get());
-			return "author-edit";
+			return "author-editing";
 		}
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@PostMapping("/authors/{id}/edit")
+	@PostMapping("/authors/{id}/editing")
 	public String authorsEditPost(@PathVariable(value = "id") long id,
 								  @RequestParam String surname,
 								  @RequestParam String name,
 								  @RequestParam String patronymic,
 								  @RequestParam Date birthdate,
 								  Model model) {
-		logger.trace("POST /authors/{}/edit " +
+		logger.trace("POST /authors/{}/editing " +
 						"surname=\"{}\" " +
 						"name=\"{}\" " +
 						"patronymic=\"{}\" " +
@@ -119,7 +119,7 @@ public class AuthorController {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
 		if (surname.equals("") || name.equals("") || patronymic.equals("") || birthdate == null) {
-			throw new InputDataValidateException("/authors/" + id + "/edit", "Все поля должны быть заполнены");
+			throw new InputDataValidateException("/authors/" + id + "/editing", "Все поля должны быть заполнены");
 		}
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
@@ -130,20 +130,20 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@PostMapping("/authors/{id}/edit/book")
+	@PostMapping("/authors/{id}/editing/book")
 	public String authorEditBookPost(@PathVariable(value = "id") long id, @RequestParam Long bookId) {
-		logger.trace("POST /authors/{}/edit/book bookId={}", id, bookId);
+		logger.trace("POST /authors/{}/editing/book bookId={}", id, bookId);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			if (bookId == null) {
-				throw new IncorrectIdException("/authors/" + id +"/edit/book", "ага ща");
+				throw new IncorrectIdException("/authors/" + id +"/editing/book", "ага ща");
 			}
 			Optional<Book> foundBook = bookRepository.findById(bookId);
 			if (foundBook.isEmpty()) {
-				throw new IncorrectIdException("/authors/" + id + "/edit", "Указанной книги не существует");
+				throw new IncorrectIdException("/authors/" + id + "/editing", "Указанной книги не существует");
 			}
 			Set<Book> authorBooks = author.get().getBooks();
 			if (authorBooks.contains(foundBook.get())) {
@@ -196,9 +196,9 @@ public class AuthorController {
 		logger.warn("EXCEPTION: \"Incorrect input date\"");
 		this.message.append(("Некорректная дата"));
 		if (this.lastAddedAuthorId == null) {
-			return "redirect:/authors/add";
+			return "redirect:/authors/adding";
 		} else {
-			return "redirect:/authors/" + this.lastAddedAuthorId + "/edit";
+			return "redirect:/authors/" + this.lastAddedAuthorId + "/editing";
 		}
 	}
 }

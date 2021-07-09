@@ -39,19 +39,19 @@ public class GenreController {
 		return "genres";
 	}
 
-	@GetMapping("/genres/add")
+	@GetMapping("/genres/adding")
 	public String genresAdd(Model model) {
-		logger.trace("GET /genres/add");
+		logger.trace("GET /genres/adding");
 		MessageToModelTransfer.transferMessage(this.message, model);
-		return "genres-add";
+		return "genres-adding";
 	}
 
-	@PostMapping("/genres/add")
+	@PostMapping("/genres/adding")
 	public String genresAddPost(@RequestParam String name,
 								 Model model) {
-		logger.trace("POST /genres/add name=\"{}\"", name);
+		logger.trace("POST /genres/adding name=\"{}\"", name);
 		if (name.equals("")) {
-			throw new InputDataValidateException("/genres/add", "Все поля должны быть заполнены");
+			throw new InputDataValidateException("/genres/adding", "Все поля должны быть заполнены");
 		}
 		Genre genre = new Genre(name);
 		genreRepository.save(genre);
@@ -73,9 +73,9 @@ public class GenreController {
 		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
-	@GetMapping("/genres/{id}/edit")
+	@GetMapping("/genres/{id}/editing")
 	public String genreEdit(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /genres/{}/edit", id);
+		logger.trace("GET /genres/{}/editing", id);
 		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
@@ -83,16 +83,16 @@ public class GenreController {
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
 			model.addAttribute("genre", genre.get());
-			return "genre-edit";
+			return "genre-editing";
 		}
 		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
-	@PostMapping("/genres/{id}/edit")
+	@PostMapping("/genres/{id}/editing")
 	public String genresEditPost(@PathVariable(value = "id") long id,
 								  @RequestParam String name,
 								  Model model) {
-		logger.trace("POST /genres/{}/edit name=\"{}\"", id, name);
+		logger.trace("POST /genres/{}/editing name=\"{}\"", id, name);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
@@ -105,18 +105,18 @@ public class GenreController {
 		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
-	@PostMapping("/genres/{id}/edit/book")
+	@PostMapping("/genres/{id}/editing/book")
 	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
-		logger.trace("POST /genres/{}/edit/books, bookId={}", id, bookId);
+		logger.trace("POST /genres/{}/editing/books, bookId={}", id, bookId);
 		if (!genreRepository.existsById(id)) {
-			throw new IncorrectIdException("/genres/" + id +"/edit", "Этого жанры уже не существует");
+			throw new IncorrectIdException("/genres/" + id +"/editing", "Этого жанры уже не существует");
 		}
 		Optional<Genre> genre = genreRepository.findById(id);
 		if (genre.isPresent()) {
 			Iterable<Book> allBooks = bookRepository.findAll();
 			Optional<Book> foundBook = bookRepository.findById(bookId);
 			if (foundBook.isEmpty()) {
-				throw new IncorrectIdException("/genres/" + id + "/edit", "Данной книги не существует");
+				throw new IncorrectIdException("/genres/" + id + "/editing", "Данной книги не существует");
 			}
 			Set<Book> genreBooks = genre.get().getBooks();
 			if (genreBooks.contains(foundBook.get())) {
@@ -125,9 +125,9 @@ public class GenreController {
 				genreBooks.add(foundBook.get());
 			}
 			genreRepository.save(genre.get());
-			return "redirect:/genres/" + id + "/edit";
+			return "redirect:/genres/" + id + "/editing";
 		}
-		throw new ViolatedDataException("/genres/" + id + "/edit", "Данные жанры нарушены");
+		throw new ViolatedDataException("/genres/" + id + "/editing", "Данные жанры нарушены");
 	}
 
 	@PostMapping("/genres/{id}/delete")

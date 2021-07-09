@@ -42,7 +42,7 @@
                         <form th:action="'/authors/' + ${author.id} + '/delete'" method="post">
                             <div class="btn-group" role="group" aria-label="Basic outlined example">
                                 <a th:href="'/authors/' + ${author.id}" type="button" class="btn btn-outline-primary">Информация</a>
-                                <a th:href="'/authors/' + ${author.id} + '/edit'" type="button" class="btn btn-outline-primary">Изменить</a>
+                                <a th:href="'/authors/' + ${author.id} + '/editing'" type="button" class="btn btn-outline-primary">Изменить</a>
                                 <button type="submit" class="rounded-end btn btn-outline-primary">Удалить</button>
                             </div>
                         </form>
@@ -50,7 +50,7 @@
                 </tr>
             </tbody>
         </table>
-        <a class="btn btn-primary" href="/authors/add" role="button">Добавить автора</a>
+        <a class="btn btn-primary" href="/authors/adding" role="button">Добавить автора</a>
     </div>
 </div>
 <div th:replace="fragments/toasts.html :: toasts"> </div>
