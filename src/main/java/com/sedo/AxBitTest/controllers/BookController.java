@@ -1,5 +1,6 @@
 package com.sedo.AxBitTest.controllers;
 
+import ch.qos.logback.classic.Logger;
 import com.sedo.AxBitTest.exceptions.IncorrectIdException;
 import com.sedo.AxBitTest.exceptions.InputDataValidateException;
 import com.sedo.AxBitTest.exceptions.ViolatedDataException;
@@ -10,6 +11,7 @@ import com.sedo.AxBitTest.models.Genre;
 import com.sedo.AxBitTest.repo.AuthorRepository;
 import com.sedo.AxBitTest.repo.BookRepository;
 import com.sedo.AxBitTest.repo.GenreRepository;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import java.util.Set;
 @Controller
 public class BookController {
 
+	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
 	private final StringBuilder message = new StringBuilder("");
 
 	@Autowired
@@ -33,6 +36,7 @@ public class BookController {
 
 	@GetMapping("/books")
 	public String books(Model model) {
+		logger.trace("GET /books");
 		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Book> books = bookRepository.findAll();
 		model.addAttribute("books", books);
@@ -41,12 +45,14 @@ public class BookController {
 
 	@GetMapping("/books/add")
 	public String booksAdd(Model model) {
+		logger.trace("GET /books/add");
 		MessageToModelTransfer.transferMessage(this.message, model);
 		return "books-add";
 	}
 
 	@PostMapping("/books/add")
 	public String booksAddPost(@RequestParam String isbn, Model model) {
+		logger.trace("POST /books/add isbn=\"{}\"", isbn);
 		long parsedIsbn;
 		try {
 			parsedIsbn = Long.parseLong(isbn);
@@ -63,6 +69,7 @@ public class BookController {
 
 	@GetMapping("/books/{id}")
 	public String book(@PathVariable(value = "id") long id, Model model) {
+		logger.trace("GET /books/{}", id);
 		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
@@ -77,6 +84,7 @@ public class BookController {
 
 	@GetMapping("/books/{id}/edit")
 	public String bookEdit(@PathVariable(value = "id") long id, Model model) {
+		logger.trace("GET /books/{}/edit", id);
 		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
@@ -93,6 +101,7 @@ public class BookController {
 	public String booksEditPost(@PathVariable(value = "id") long id,
 								@RequestParam String isbn,
 								Model model) {
+		logger.trace("POST /books/{}/edit isbn=\"{}\"" , id, isbn);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -111,6 +120,7 @@ public class BookController {
 
 	@PostMapping("/books/{id}/edit/author")
 	public String bookEditAuthorPost(@PathVariable(value = "id") long id, @RequestParam long authorId) {
+		logger.trace("POST /books/{}/edit/author authorId={}", id, authorId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -133,6 +143,7 @@ public class BookController {
 
 	@PostMapping("/books/{id}/edit/genre")
 	public String bookEditGenrePost(@PathVariable(value = "id") long id, @RequestParam long genreId) {
+		logger.trace("POST /books/{}/edit/genre genreId={}", id, genreId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -155,6 +166,7 @@ public class BookController {
 
 	@PostMapping("/books/{id}/delete")
 	public String bookRemovePost(@PathVariable(value = "id") long id, Model model) {
+		logger.trace("POST /books/{}/delete", id);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -168,18 +180,21 @@ public class BookController {
 
 	@ExceptionHandler(InputDataValidateException.class)
 	public String handleException(InputDataValidateException exception) {
+		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
 		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(IncorrectIdException.class)
 	public String handleException(IncorrectIdException exception) {
+		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
 		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(ViolatedDataException.class)
 	public String handleException(ViolatedDataException exception) {
+		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
 		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
