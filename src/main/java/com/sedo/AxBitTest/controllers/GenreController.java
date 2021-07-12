@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import com.sedo.AxBitTest.exceptions.IncorrectIdException;
 import com.sedo.AxBitTest.exceptions.InputDataValidateException;
 import com.sedo.AxBitTest.exceptions.ViolatedDataException;
-import com.sedo.AxBitTest.helpers.MessageToModelTransfer;
 import com.sedo.AxBitTest.models.Genre;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.repo.GenreRepository;
@@ -22,7 +21,6 @@ import java.util.Set;
 public class GenreController {
 
 	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
-	private final StringBuilder message = new StringBuilder("");
 
 	@Autowired
 	private GenreRepository genreRepository;
@@ -33,7 +31,6 @@ public class GenreController {
 	@GetMapping("/genres")
 	public String genres(Model model) {
 		logger.trace("GET /genres");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Genre> genres = genreRepository.findAll();
 		model.addAttribute("genres", genres);
 		return "genres";
@@ -42,14 +39,13 @@ public class GenreController {
 	@GetMapping("/genres/adding")
 	public String genresAdd(Model model) {
 		logger.trace("GET /genres/adding");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		return "genres-adding";
 	}
 
-	@PostMapping("/genres/adding")
+	@PostMapping("/genres")
 	public String genresAddPost(@RequestParam String name,
 								 Model model) {
-		logger.trace("POST /genres/adding name=\"{}\"", name);
+		logger.trace("POST /genres name=\"{}\"", name);
 		if (name.equals("")) {
 			throw new InputDataValidateException("/genres/adding", "Все поля должны быть заполнены");
 		}
@@ -61,7 +57,6 @@ public class GenreController {
 	@GetMapping("/genres/{id}")
 	public String genre(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /genres/{}", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
@@ -73,20 +68,19 @@ public class GenreController {
 		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
-	@GetMapping("/genres/{id}/editing")
-	public String genreEdit(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /genres/{}/editing", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
-		if (!genreRepository.existsById(id)) {
-			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
-		}
-		Optional<Genre> genre = genreRepository.findById(id);
-		if (genre.isPresent()) {
-			model.addAttribute("genre", genre.get());
-			return "genre-editing";
-		}
-		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
-	}
+//	@GetMapping("/genres/{id}/editing")
+//	public String genreEdit(@PathVariable(value = "id") long id, Model model) {
+//		logger.trace("GET /genres/{}/editing", id);
+//		if (!genreRepository.existsById(id)) {
+//			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
+//		}
+//		Optional<Genre> genre = genreRepository.findById(id);
+//		if (genre.isPresent()) {
+//			model.addAttribute("genre", genre.get());
+//			return "genre-editing";
+//		}
+//		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
+//	}
 
 	@PostMapping("/genres/{id}/editing")
 	public String genresEditPost(@PathVariable(value = "id") long id,
@@ -105,9 +99,9 @@ public class GenreController {
 		throw new ViolatedDataException("/genres", "Данные жанры нарушены");
 	}
 
-	@PostMapping("/genres/{id}/editing/book")
+	@PatchMapping("/genres/{id}/book")
 	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
-		logger.trace("POST /genres/{}/editing/books, bookId={}", id, bookId);
+		logger.trace("POST /genres/{}/books, bookId={}", id, bookId);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres/" + id +"/editing", "Этого жанры уже не существует");
 		}
@@ -130,9 +124,9 @@ public class GenreController {
 		throw new ViolatedDataException("/genres/" + id + "/editing", "Данные жанры нарушены");
 	}
 
-	@PostMapping("/genres/{id}/delete")
+	@DeleteMapping("/genres/{id}")
 	public String genreRemovePost(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /genres/{}/delete", id);
+		logger.trace("GET /genres/{}", id);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
 		}
@@ -147,21 +141,18 @@ public class GenreController {
 	@ExceptionHandler(InputDataValidateException.class)
 	public String handleException(InputDataValidateException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(IncorrectIdException.class)
 	public String handleException(IncorrectIdException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(ViolatedDataException.class)
 	public String handleException(ViolatedDataException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 }

@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import com.sedo.AxBitTest.exceptions.IncorrectIdException;
 import com.sedo.AxBitTest.exceptions.InputDataValidateException;
 import com.sedo.AxBitTest.exceptions.ViolatedDataException;
-import com.sedo.AxBitTest.helpers.MessageToModelTransfer;
 import com.sedo.AxBitTest.models.Author;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.models.Genre;
@@ -23,7 +22,6 @@ import java.util.Set;
 public class BookController {
 
 	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
-	private final StringBuilder message = new StringBuilder("");
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -35,32 +33,30 @@ public class BookController {
 	private GenreRepository genreRepository;
 
 	@GetMapping("/books")
-	public String books(Model model) {
+	public String booksGet(Model model) {
 		logger.trace("GET /books");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Book> books = bookRepository.findAll();
 		model.addAttribute("books", books);
 		return "books";
 	}
 
 	@GetMapping("/books/adding")
-	public String booksAdd(Model model) {
+	public String booksAddingGet(Model model) {
 		logger.trace("GET /books/adding");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		return "books-adding";
 	}
 
-	@PostMapping("/books/adding")
-	public String booksAddPost(@RequestParam String isbn, Model model) {
-		logger.trace("POST /books/adding isbn=\"{}\"", isbn);
+	@PostMapping("/books")
+	public String booksPost(@RequestParam String isbn, Model model) {
+		logger.trace("POST /books isbn=\"{}\"", isbn);
 		long parsedIsbn;
 		try {
 			parsedIsbn = Long.parseLong(isbn);
 		} catch (NumberFormatException numberFormatException) {
-			throw new InputDataValidateException("/books/adding", "ISBN должен состоять только из цифр");
+			throw new InputDataValidateException("/books", "ISBN должен состоять только из цифр");
 		}
 		if (Long.toString(parsedIsbn).length() != 13) {
-			throw new InputDataValidateException("/books/adding", "ISBN должен состоять из 13 цифр");
+			throw new InputDataValidateException("/books", "ISBN должен состоять из 13 цифр");
 		}
 		Book book = new Book(parsedIsbn);
 		bookRepository.save(book);
@@ -68,9 +64,8 @@ public class BookController {
 	}
 
 	@GetMapping("/books/{id}")
-	public String book(@PathVariable(value = "id") long id, Model model) {
+	public String bookGet(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /books/{}", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -82,26 +77,25 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@GetMapping("/books/{id}/editing")
-	public String bookEdit(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /books/{}/editing", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
-		if (!bookRepository.existsById(id)) {
-			throw new IncorrectIdException("/books", "Этой книги уже не существует");
-		}
-		Optional<Book> book = bookRepository.findById(id);
-		if (book.isPresent()) {
-			model.addAttribute("book", book.get());
-			return "book-editing";
-		}
-		throw new ViolatedDataException("/books", "Данные книги нарушены");
-	}
+//	@GetMapping("/books/{id}/editing")
+//	public String bookEditingGet(@PathVariable(value = "id") long id, Model model) {
+//		logger.trace("GET /books/{}/editing", id);
+//		if (!bookRepository.existsById(id)) {
+//			throw new IncorrectIdException("/books", "Этой книги уже не существует");
+//		}
+//		Optional<Book> book = bookRepository.findById(id);
+//		if (book.isPresent()) {
+//			model.addAttribute("book", book.get());
+//			return "book-editing";
+//		}
+//		throw new ViolatedDataException("/books", "Данные книги нарушены");
+//	}
 
-	@PostMapping("/books/{id}/editing")
-	public String booksEditPost(@PathVariable(value = "id") long id,
+	@PutMapping("/books/{id}")
+	public String bookPut(@PathVariable(value = "id") long id,
 								@RequestParam String isbn,
 								Model model) {
-		logger.trace("POST /books/{}/editing isbn=\"{}\"" , id, isbn);
+		logger.trace("PUT /books/{} isbn=\"{}\"" , id, isbn);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -118,9 +112,9 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@PostMapping("/books/{id}/editing/author")
+	@PatchMapping("/books/{id}/author")
 	public String bookEditAuthorPost(@PathVariable(value = "id") long id, @RequestParam long authorId) {
-		logger.trace("POST /books/{}/editing/author authorId={}", id, authorId);
+		logger.trace("PATCH /books/{}/author authorId={}", id, authorId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -141,9 +135,9 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@PostMapping("/books/{id}/editing/genre")
+	@PatchMapping("/books/{id}/genre")
 	public String bookEditGenrePost(@PathVariable(value = "id") long id, @RequestParam long genreId) {
-		logger.trace("POST /books/{}/editing/genre genreId={}", id, genreId);
+		logger.trace("PATCH /books/{}/genre genreId={}", id, genreId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -164,9 +158,9 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@PostMapping("/books/{id}/delete")
+	@DeleteMapping("/books/{id}")
 	public String bookRemovePost(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("POST /books/{}/delete", id);
+		logger.trace("POST /books/{}", id);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -181,21 +175,18 @@ public class BookController {
 	@ExceptionHandler(InputDataValidateException.class)
 	public String handleException(InputDataValidateException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(IncorrectIdException.class)
 	public String handleException(IncorrectIdException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(ViolatedDataException.class)
 	public String handleException(ViolatedDataException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 }

@@ -4,7 +4,6 @@ import ch.qos.logback.classic.Logger;
 import com.sedo.AxBitTest.exceptions.IncorrectIdException;
 import com.sedo.AxBitTest.exceptions.InputDataValidateException;
 import com.sedo.AxBitTest.exceptions.ViolatedDataException;
-import com.sedo.AxBitTest.helpers.MessageToModelTransfer;
 import com.sedo.AxBitTest.models.Author;
 import com.sedo.AxBitTest.models.Book;
 import com.sedo.AxBitTest.repo.AuthorRepository;
@@ -24,7 +23,6 @@ import java.util.Set;
 public class AuthorController {
 
 	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
-	private final StringBuilder message = new StringBuilder("");
 	private Long lastAddedAuthorId = null;
 
 	@Autowired
@@ -34,36 +32,34 @@ public class AuthorController {
 	private BookRepository bookRepository;
 
 	@GetMapping("/authors")
-	public String authors(Model model) {
+	public String authorsGet(Model model) {
 		logger.trace("GET /authors");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		Iterable<Author> authors = authorRepository.findAll();
 		model.addAttribute("authors", authors);
 		return "authors";
 	}
 
 	@GetMapping("/authors/adding")
-	public String authorsAdd(Model model) {
+	public String authorsAddingGet(Model model) {
 		logger.trace("GET /authors/adding");
-		MessageToModelTransfer.transferMessage(this.message, model);
 		this.lastAddedAuthorId = null;
 		return "authors-adding";
 	}
 
-	@PostMapping("/authors/adding")
-	public String authorsAddPost(@RequestParam String surname,
+	@PostMapping("/authors")
+	public String authorsPost(@RequestParam String surname,
 								 @RequestParam String name,
 								 @RequestParam String patronymic,
 								 @RequestParam Date birthdate,
 								 Model model) {
-		logger.trace("POST /authors/adding " +
+		logger.trace("POST /authors " +
 				"surname=\"{}\" " +
 				"name=\"{}\" " +
 				"patronymic=\"{}\" " +
 				"birthdate=\"{}\"",
 				surname, name, patronymic, birthdate);
 		if (surname.equals("") || name.equals("") || patronymic.equals("") || birthdate == null) {
-			throw new InputDataValidateException("/authors/adding", "Все поля должны быть заполнены");
+			throw new InputDataValidateException("/authors", "Все поля должны быть заполнены");
 		}
 		Author author = new Author(name, surname, patronymic, birthdate);
 		authorRepository.save(author);
@@ -71,9 +67,8 @@ public class AuthorController {
 	}
 
 	@GetMapping("/authors/{id}")
-	public String author(@PathVariable(value = "id") long id, Model model) {
+	public String authorGet(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /authors/{}", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
@@ -85,36 +80,34 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@GetMapping("/authors/{id}/editing")
-	public String authorEdit(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("GET /authors/{}/editing", id);
-		MessageToModelTransfer.transferMessage(this.message, model);
-		if (!authorRepository.existsById(id)) {
-			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
-		}
-		this.lastAddedAuthorId = id;
-		Optional<Author> author = authorRepository.findById(id);
-		if (author.isPresent()) {
-			model.addAttribute("author", author.get());
-			return "author-editing";
-		}
-		throw new ViolatedDataException("/authors", "Данные автора нарушены");
-	}
+//	@GetMapping("/authors/{id}/editing")
+//	public String authorEdit(@PathVariable(value = "id") long id, Model model) {
+//		logger.trace("GET /authors/{}/editing", id);
+//		if (!authorRepository.existsById(id)) {
+//			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
+//		}
+//		this.lastAddedAuthorId = id;
+//		Optional<Author> author = authorRepository.findById(id);
+//		if (author.isPresent()) {
+//			model.addAttribute("author", author.get());
+//			return "author-editing";
+//		}
+//		throw new ViolatedDataException("/authors", "Данные автора нарушены");
+//	}
 
-	@PostMapping("/authors/{id}/editing")
-	public String authorsEditPost(@PathVariable(value = "id") long id,
+	@PutMapping("/authors/{id}")
+	public String authorsPut(@PathVariable(value = "id") long id,
 								  @RequestParam String surname,
 								  @RequestParam String name,
 								  @RequestParam String patronymic,
 								  @RequestParam Date birthdate,
 								  Model model) {
-		logger.trace("POST /authors/{}/editing " +
+		logger.trace("POST /authors/{} " +
 						"surname=\"{}\" " +
 						"name=\"{}\" " +
 						"patronymic=\"{}\" " +
 						"birthdate=\"{}\"",
 				id, surname, name, patronymic, birthdate);
-		MessageToModelTransfer.transferMessage(this.message, model);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
@@ -130,16 +123,16 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@PostMapping("/authors/{id}/editing/book")
-	public String authorEditBookPost(@PathVariable(value = "id") long id, @RequestParam Long bookId) {
-		logger.trace("POST /authors/{}/editing/book bookId={}", id, bookId);
+	@PatchMapping("/authors/{id}/book")
+	public String authorBookPatch(@PathVariable(value = "id") long id, @RequestParam Long bookId) {
+		logger.trace("POST /authors/{}/book bookId={}", id, bookId);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
 		Optional<Author> author = authorRepository.findById(id);
 		if (author.isPresent()) {
 			if (bookId == null) {
-				throw new IncorrectIdException("/authors/" + id +"/editing/book", "ага ща");
+				throw new IncorrectIdException("/authors/" + id +"/book", "Не введён ID книги");
 			}
 			Optional<Book> foundBook = bookRepository.findById(bookId);
 			if (foundBook.isEmpty()) {
@@ -156,9 +149,9 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@PostMapping("/authors/{id}/delete")
-	public String authorRemovePost(@PathVariable(value = "id") long id, Model model) {
-		logger.trace("POST /authors/{}/delete", id);
+	@DeleteMapping("/authors/{id}")
+	public String authorDelete(@PathVariable(value = "id") long id, Model model) {
+		logger.trace("POST /authors/{}", id);
 		if (!authorRepository.existsById(id)) {
 			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
 		}
@@ -173,28 +166,24 @@ public class AuthorController {
 	@ExceptionHandler(InputDataValidateException.class)
 	public String handleException(InputDataValidateException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(IncorrectIdException.class)
 	public String handleException(IncorrectIdException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(ViolatedDataException.class)
 	public String handleException(ViolatedDataException exception) {
 		logger.warn("EXCEPTION \"{}\"", exception.getMessage());
-		this.message.append(exception.getMessage());
 		return "redirect:" + exception.getUri();
 	}
 
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	public String handleException(MethodArgumentTypeMismatchException exception) {
 		logger.warn("EXCEPTION: \"Incorrect input date\"");
-		this.message.append(("Некорректная дата"));
 		if (this.lastAddedAuthorId == null) {
 			return "redirect:/authors/adding";
 		} else {
