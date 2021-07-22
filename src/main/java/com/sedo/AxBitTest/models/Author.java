@@ -3,7 +3,7 @@ package com.sedo.AxBitTest.models;
 import com.sedo.AxBitTest.helpers.SetHelper;
 
 import javax.persistence.*;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
@@ -14,7 +14,7 @@ public class Author extends TimestampingModel{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String name, surname, patronymic;
-	private Date birthdate;
+	private LocalDate birthdate;
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "book_author",
 			joinColumns = @JoinColumn(name = "author_id"),
@@ -26,14 +26,14 @@ public class Author extends TimestampingModel{
 		super();
 	}
 
-	public Author(String name, String surname, String patronymic, Date birthdate) {
+	public Author(String name, String surname, String patronymic, LocalDate birthdate) {
 		this.name = name;
 		this.surname = surname;
 		this.patronymic = patronymic;
 		this.birthdate = birthdate;
 	}
 
-	public void edit(String name, String surname, String patronymic, Date birthdate) {
+	public void edit(String name, String surname, String patronymic, LocalDate birthdate) {
 		this.name = name;
 		this.surname = surname;
 		this.patronymic = patronymic;
@@ -68,11 +68,11 @@ public class Author extends TimestampingModel{
 		this.patronymic = patronymic;
 	}
 
-	public Date getBirthdate() {
+	public LocalDate getBirthdate() {
 		return birthdate;
 	}
 
-	public void setBirthdate(Date birthdate) {
+	public void setBirthdate(LocalDate birthdate) {
 		this.birthdate = birthdate;
 	}
 

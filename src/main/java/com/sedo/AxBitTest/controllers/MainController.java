@@ -13,12 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class MainController {
 
 	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
-	@Autowired
-	private AuthorRepository authorRepository;
-	@Autowired
-	private BookRepository bookRepository;
 
-	@GetMapping("/")
+	@GetMapping("")
 	public String home(Model model) {
 		logger.trace("GET /");
 		return "home";

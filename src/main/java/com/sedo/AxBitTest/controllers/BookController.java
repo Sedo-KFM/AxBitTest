@@ -15,13 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 import java.util.Set;
 
 @Controller
 public class BookController {
 
-	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
+	static private final Logger logger = (Logger) LoggerFactory.getLogger(BookController.class);
 
 	@Autowired
 	private BookRepository bookRepository;
@@ -32,7 +33,7 @@ public class BookController {
 	@Autowired
 	private GenreRepository genreRepository;
 
-	@GetMapping("/books")
+	@GetMapping("books")
 	public String booksGet(Model model) {
 		logger.trace("GET /books");
 		Iterable<Book> books = bookRepository.findAll();
@@ -40,13 +41,13 @@ public class BookController {
 		return "books";
 	}
 
-	@GetMapping("/books/adding")
+	@GetMapping("books/adding")
 	public String booksAddingGet(Model model) {
 		logger.trace("GET /books/adding");
 		return "books-adding";
 	}
 
-	@PostMapping("/books")
+	@PostMapping("books")
 	public String booksPost(@RequestParam String isbn, Model model) {
 		logger.trace("POST /books isbn=\"{}\"", isbn);
 		long parsedIsbn;
@@ -63,7 +64,7 @@ public class BookController {
 		return "redirect:/books";
 	}
 
-	@GetMapping("/books/{id}")
+	@GetMapping("books/{id}")
 	public String bookGet(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /books/{}", id);
 		if (!bookRepository.existsById(id)) {
@@ -77,25 +78,11 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-//	@GetMapping("/books/{id}/editing")
-//	public String bookEditingGet(@PathVariable(value = "id") long id, Model model) {
-//		logger.trace("GET /books/{}/editing", id);
-//		if (!bookRepository.existsById(id)) {
-//			throw new IncorrectIdException("/books", "Этой книги уже не существует");
-//		}
-//		Optional<Book> book = bookRepository.findById(id);
-//		if (book.isPresent()) {
-//			model.addAttribute("book", book.get());
-//			return "book-editing";
-//		}
-//		throw new ViolatedDataException("/books", "Данные книги нарушены");
-//	}
-
-	@PutMapping("/books/{id}")
+	@PutMapping("books/{id}")
 	public String bookPut(@PathVariable(value = "id") long id,
-								@RequestParam String isbn,
-								Model model) {
-		logger.trace("PUT /books/{} isbn=\"{}\"" , id, isbn);
+						  @RequestParam String isbn,
+						  Model model) {
+		logger.trace("PUT /books/{} isbn=\"{}\"", id, isbn);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
 		}
@@ -112,7 +99,7 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@PatchMapping("/books/{id}/author")
+	@PatchMapping("books/{id}/author")
 	public String bookEditAuthorPost(@PathVariable(value = "id") long id, @RequestParam long authorId) {
 		logger.trace("PATCH /books/{}/author authorId={}", id, authorId);
 		if (!bookRepository.existsById(id)) {
@@ -122,7 +109,7 @@ public class BookController {
 		if (book.isPresent()) {
 			Optional<Author> foundAuthor = authorRepository.findById(authorId);
 			if (foundAuthor.isEmpty()) {
-				throw new IncorrectIdException("/books/" + id +"/editing", "Указанного автора не существует");
+				throw new IncorrectIdException("/books/" + id + "/editing", "Указанного автора не существует");
 			}
 			Set<Author> bookAuthors = book.get().getAuthors();
 			if (bookAuthors.contains(foundAuthor.get())) {
@@ -135,7 +122,7 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@PatchMapping("/books/{id}/genre")
+	@PatchMapping("books/{id}/genre")
 	public String bookEditGenrePost(@PathVariable(value = "id") long id, @RequestParam long genreId) {
 		logger.trace("PATCH /books/{}/genre genreId={}", id, genreId);
 		if (!bookRepository.existsById(id)) {
@@ -145,7 +132,7 @@ public class BookController {
 		if (book.isPresent()) {
 			Optional<Genre> foundGenre = genreRepository.findById(genreId);
 			if (foundGenre.isEmpty()) {
-				throw new IncorrectIdException("/books/" + id +"/editing", "Указанного жанра не существует");
+				throw new IncorrectIdException("/books/" + id + "/editing", "Указанного жанра не существует");
 			}
 			Set<Genre> bookGenres = book.get().getGenres();
 			if (bookGenres.contains(foundGenre.get())) {
@@ -158,18 +145,13 @@ public class BookController {
 		throw new ViolatedDataException("/books", "Данные книги нарушены");
 	}
 
-	@DeleteMapping("/books/{id}")
+	@DeleteMapping("books/{id}")
 	public String bookRemovePost(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("POST /books/{}", id);
-		if (!bookRepository.existsById(id)) {
-			throw new IncorrectIdException("/books", "Этой книги уже не существует");
-		}
-		Optional<Book> book = bookRepository.findById(id);
-		if (book.isPresent()) {
-			bookRepository.delete(book.get());
-			return "redirect:/books";
-		}
-		throw new ViolatedDataException("/books", "Данные книги нарушены");
+		Book b = bookRepository.findById(id)
+				.orElseThrow(() -> new IncorrectIdException("/books", "Этой книги уже не существует"));
+		bookRepository.delete(b);
+		return "redirect:/books";
 	}
 
 	@ExceptionHandler(InputDataValidateException.class)

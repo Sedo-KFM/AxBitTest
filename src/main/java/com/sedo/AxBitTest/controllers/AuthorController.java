@@ -15,14 +15,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Set;
 
 @Controller
 public class AuthorController {
 
-	static private final Logger logger = (Logger) LoggerFactory.getLogger(MainController.class);
+	static private final Logger logger = (Logger) LoggerFactory.getLogger(AuthorController.class);
 	private Long lastAddedAuthorId = null;
 
 	@Autowired
@@ -31,7 +31,7 @@ public class AuthorController {
 	@Autowired
 	private BookRepository bookRepository;
 
-	@GetMapping("/authors")
+	@GetMapping("authors")
 	public String authorsGet(Model model) {
 		logger.trace("GET /authors");
 		Iterable<Author> authors = authorRepository.findAll();
@@ -39,18 +39,20 @@ public class AuthorController {
 		return "authors";
 	}
 
-	@GetMapping("/authors/adding")
+	@GetMapping("authors/adding")
 	public String authorsAddingGet(Model model) {
+		StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[0];
+		logger.trace(stackTraceElement.getMethodName());
 		logger.trace("GET /authors/adding");
 		this.lastAddedAuthorId = null;
 		return "authors-adding";
 	}
 
-	@PostMapping("/authors")
+	@PostMapping("authors")
 	public String authorsPost(@RequestParam String surname,
 								 @RequestParam String name,
 								 @RequestParam String patronymic,
-								 @RequestParam Date birthdate,
+								 @RequestParam LocalDate birthdate,
 								 Model model) {
 		logger.trace("POST /authors " +
 				"surname=\"{}\" " +
@@ -66,7 +68,7 @@ public class AuthorController {
 		return "redirect:/authors";
 	}
 
-	@GetMapping("/authors/{id}")
+	@GetMapping("authors/{id}")
 	public String authorGet(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /authors/{}", id);
 		if (!authorRepository.existsById(id)) {
@@ -80,27 +82,12 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-//	@GetMapping("/authors/{id}/editing")
-//	public String authorEdit(@PathVariable(value = "id") long id, Model model) {
-//		logger.trace("GET /authors/{}/editing", id);
-//		if (!authorRepository.existsById(id)) {
-//			throw new IncorrectIdException("/authors", "Этого автора уже не существует");
-//		}
-//		this.lastAddedAuthorId = id;
-//		Optional<Author> author = authorRepository.findById(id);
-//		if (author.isPresent()) {
-//			model.addAttribute("author", author.get());
-//			return "author-editing";
-//		}
-//		throw new ViolatedDataException("/authors", "Данные автора нарушены");
-//	}
-
-	@PutMapping("/authors/{id}")
+	@PutMapping("authors/{id}")
 	public String authorsPut(@PathVariable(value = "id") long id,
 								  @RequestParam String surname,
 								  @RequestParam String name,
 								  @RequestParam String patronymic,
-								  @RequestParam Date birthdate,
+								  @RequestParam LocalDate birthdate,
 								  Model model) {
 		logger.trace("POST /authors/{} " +
 						"surname=\"{}\" " +
@@ -123,7 +110,7 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@PatchMapping("/authors/{id}/book")
+	@PatchMapping("authors/{id}/book")
 	public String authorBookPatch(@PathVariable(value = "id") long id, @RequestParam Long bookId) {
 		logger.trace("POST /authors/{}/book bookId={}", id, bookId);
 		if (!authorRepository.existsById(id)) {
@@ -149,7 +136,7 @@ public class AuthorController {
 		throw new ViolatedDataException("/authors", "Данные автора нарушены");
 	}
 
-	@DeleteMapping("/authors/{id}")
+	@DeleteMapping("authors/{id}")
 	public String authorDelete(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("POST /authors/{}", id);
 		if (!authorRepository.existsById(id)) {

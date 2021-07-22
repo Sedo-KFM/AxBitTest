@@ -1,46 +1,48 @@
 package com.sedo.AxBitTest.models;
 
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PreUpdate;
-import java.sql.Date;
+import java.time.LocalDate;
 
 @MappedSuperclass
 abstract public class TimestampingModel {
-	protected Date creationDate;
-	protected Date modificationDate;
+	@CreatedDate
+	protected LocalDate creationDate;
+	@LastModifiedDate
+	protected LocalDate modificationDate;
 
 	public TimestampingModel() {
-		this.creationDate = new Date(System.currentTimeMillis());
-		this.modificationDate = new Date(System.currentTimeMillis());
 	}
 
-	public TimestampingModel(Date creationDate, Date modificationDate) {
+	public TimestampingModel(LocalDate creationDate, LocalDate modificationDate) {
 		this.creationDate = creationDate;
 		this.modificationDate = modificationDate;
 	}
 
-	public Date getCreationDate() {
+	public LocalDate getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(LocalDate creationDate) {
 		this.creationDate = creationDate;
 	}
 
-	public Date getModificationDate() {
+	public LocalDate getModificationDate() {
 		return modificationDate;
 	}
 
-	public void setModificationDate(Date modificationDate) {
+	public void setModificationDate(LocalDate modificationDate) {
 		this.modificationDate = modificationDate;
 	}
 
 	public void updateModificationDate() {
-		this.modificationDate.setTime(System.currentTimeMillis());
+		this.modificationDate = LocalDate.now();
 	}
 
 	@PreUpdate
 	private void preUpdate() {
-		this.modificationDate.setTime(System.currentTimeMillis());
+		this.modificationDate = LocalDate.now();
 	}
 }
