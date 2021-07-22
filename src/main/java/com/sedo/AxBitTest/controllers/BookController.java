@@ -100,7 +100,7 @@ public class BookController {
 	}
 
 	@PatchMapping("books/{id}/author")
-	public String bookEditAuthorPost(@PathVariable(value = "id") long id, @RequestParam long authorId) {
+	public String bookAuthorPatch(@PathVariable(value = "id") long id, @RequestParam long authorId) {
 		logger.trace("PATCH /books/{}/author authorId={}", id, authorId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
@@ -123,7 +123,7 @@ public class BookController {
 	}
 
 	@PatchMapping("books/{id}/genre")
-	public String bookEditGenrePost(@PathVariable(value = "id") long id, @RequestParam long genreId) {
+	public String bookGenrePatch(@PathVariable(value = "id") long id, @RequestParam long genreId) {
 		logger.trace("PATCH /books/{}/genre genreId={}", id, genreId);
 		if (!bookRepository.existsById(id)) {
 			throw new IncorrectIdException("/books", "Этой книги уже не существует");
@@ -146,7 +146,7 @@ public class BookController {
 	}
 
 	@DeleteMapping("books/{id}")
-	public String bookRemovePost(@PathVariable(value = "id") long id, Model model) {
+	public String bookDelete(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("POST /books/{}", id);
 		Book b = bookRepository.findById(id)
 				.orElseThrow(() -> new IncorrectIdException("/books", "Этой книги уже не существует"));

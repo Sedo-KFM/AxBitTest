@@ -30,7 +30,7 @@ public class GenreController {
 	private BookRepository bookRepository;
 
 	@GetMapping("genres")
-	public String genres(Model model) {
+	public String genresGet(Model model) {
 		logger.trace("GET /genres");
 		Iterable<Genre> genres = genreRepository.findAll();
 		model.addAttribute("genres", genres);
@@ -38,13 +38,13 @@ public class GenreController {
 	}
 
 	@GetMapping("genres/adding")
-	public String genresAdd(Model model) {
+	public String genresAddingGet(Model model) {
 		logger.trace("GET /genres/adding");
 		return "genres-adding";
 	}
 
 	@PostMapping("genres")
-	public String genresAddPost(@RequestParam @NotNull String name,
+	public String genresPost(@RequestParam @NotNull String name,
 								 Model model) {
 		logger.trace("POST /genres name=\"{}\"", name);
 		if (name.equals("")) {
@@ -56,7 +56,7 @@ public class GenreController {
 	}
 
 	@GetMapping("genres/{id}")
-	public String genre(@PathVariable(value = "id") long id, Model model) {
+	public String genreGet(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /genres/{}", id);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");
@@ -70,7 +70,7 @@ public class GenreController {
 	}
 
 	@PostMapping("genres/{id}/editing")
-	public String genresEditPost(@PathVariable(value = "id") long id,
+	public String genreEditingPost(@PathVariable(value = "id") long id,
 								  @RequestParam String name,
 								  Model model) {
 		logger.trace("POST /genres/{}/editing name=\"{}\"", id, name);
@@ -87,7 +87,7 @@ public class GenreController {
 	}
 
 	@PatchMapping("genres/{id}/book")
-	public String genreEditBookPost(@PathVariable(value = "id") long id, @RequestParam long bookId) {
+	public String genreBookPatch(@PathVariable(value = "id") long id, @RequestParam long bookId) {
 		logger.trace("POST /genres/{}/books, bookId={}", id, bookId);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres/" + id +"/editing", "Этого жанры уже не существует");
@@ -112,7 +112,7 @@ public class GenreController {
 	}
 
 	@DeleteMapping("genres/{id}")
-	public String genreRemovePost(@PathVariable(value = "id") long id, Model model) {
+	public String genreDelete(@PathVariable(value = "id") long id, Model model) {
 		logger.trace("GET /genres/{}", id);
 		if (!genreRepository.existsById(id)) {
 			throw new IncorrectIdException("/genres", "Этого жанры уже не существует");

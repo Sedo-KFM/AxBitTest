@@ -83,7 +83,7 @@ public class AuthorController {
 	}
 
 	@PutMapping("authors/{id}")
-	public String authorsPut(@PathVariable(value = "id") long id,
+	public String authorPut(@PathVariable(value = "id") long id,
 								  @RequestParam String surname,
 								  @RequestParam String name,
 								  @RequestParam String patronymic,
